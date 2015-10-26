@@ -28,11 +28,10 @@ public class SurfaceRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        GLES20.glClearColor(1, 1, 1, 1);
-
         this.time = System.nanoTime();
         this.lastTime = time;
         this.lastInfo = time;
+        this.game.setup();
     }
 
     @Override

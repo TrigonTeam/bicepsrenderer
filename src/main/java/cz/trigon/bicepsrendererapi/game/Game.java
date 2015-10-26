@@ -13,6 +13,7 @@ public abstract class Game {
         this.context = renderer.getContext();
     }
 
+    public abstract void setup();
     public abstract void tick();
     public abstract void renderTick(float ptt);
     public abstract void surfaceChanged(int w, int h);
