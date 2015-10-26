@@ -1,17 +1,17 @@
 package cz.trigon.bicepsrendererapi;
 
 import android.content.Context;
-import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.view.MotionEvent;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import cz.trigon.bicepsrendererapi.game.Game;
 
-public class SurfaceRenderer implements GLSurfaceView.Renderer {
-    protected Context context;
+public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     private Game game;
+    private Input input;
 
     protected int tps = 20, magicConstant = 1000000000;
     protected double tickTime = 1d / tps;
@@ -19,11 +19,21 @@ public class SurfaceRenderer implements GLSurfaceView.Renderer {
     protected long time, lastTime, lastInfo;
     protected int fps, ticks, currentFps;
 
-    public SurfaceRenderer(Context context, Game game) {
-        this.context = context;
-        this.game = game;
+    public Surface(Context context) {
+        super(context);
+        this.setEGLContextClientVersion(2);
 
-        this.game.setRenderer(this);
+        this.input = new Input();
+    }
+
+    public Surface(Context context, Game game) {
+        this(context);
+        this.setGame(game);
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+        this.game.setSurface(this);
     }
 
     @Override
@@ -68,8 +78,8 @@ public class SurfaceRenderer implements GLSurfaceView.Renderer {
         return this.ticks;
     }
 
-    public Context getContext() {
-        return this.context;
+    public Input getInput() {
+        return this.input;
     }
 
     // Maybe we should check if game != null here
@@ -81,5 +91,15 @@ public class SurfaceRenderer implements GLSurfaceView.Renderer {
         this.game.tick();
     }
 
+    public boolean onTouchEvent(final MotionEvent e) {
+        if(e.getAction() == MotionEvent.ACTION_UP) {
+            this.input.isTouched = false;
+            return false;
+        } else if(e.getAction() == MotionEvent.ACTION_DOWN) {
+            this.input.isTouched = true;
+        }
+
+        return true;
+    }
 
 }
