@@ -2,15 +2,15 @@ package cz.trigon.bicepsrendererapi.game;
 
 import android.content.Context;
 
-import cz.trigon.bicepsrendererapi.SurfaceRenderer;
+import cz.trigon.bicepsrendererapi.Surface;
 
 public abstract class Game {
-    protected SurfaceRenderer renderer;
+    protected Surface surface;
     protected Context context;
 
-    public void setRenderer(SurfaceRenderer renderer) {
-        this.renderer = renderer;
-        this.context = renderer.getContext();
+    public void setSurface(Surface surface) {
+        this.surface = surface;
+        this.context = surface.getContext();
     }
 
     public abstract void setup();
