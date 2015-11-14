@@ -21,9 +21,10 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
 
     public Surface(Context context) {
         super(context);
-        this.setEGLContextClientVersion(2);
-
         this.input = new Input();
+
+        this.setEGLContextClientVersion(2);
+        this.setRenderer(this);
     }
 
     public Surface(Context context, Game game) {
