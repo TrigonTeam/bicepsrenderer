@@ -8,10 +8,11 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import cz.trigon.bicepsrendererapi.game.Game;
+import cz.trigon.bicepsrendererapi.managers.InputManager;
 
 public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     private Game game;
-    private Input input;
+    private InputManager input;
 
     protected int tps = 20, magicConstant = 1000000000;
     protected double tickTime = 1d / tps;
@@ -21,7 +22,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
 
     public Surface(Context context) {
         super(context);
-        this.input = new Input();
+        this.input = new InputManager(this);
 
         this.setEGLContextClientVersion(2);
         this.setRenderer(this);
@@ -79,10 +80,6 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
         return this.ticks;
     }
 
-    public Input getInput() {
-        return this.input;
-    }
-
     // Maybe we should check if game != null here
     private void renderTick(float ptt) {
         this.game.renderTick(ptt);
@@ -92,15 +89,30 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
         this.game.tick();
     }
 
+    @Override
     public boolean onTouchEvent(final MotionEvent e) {
-        if(e.getAction() == MotionEvent.ACTION_UP) {
-            this.input.isTouched = false;
-            return false;
-        } else if(e.getAction() == MotionEvent.ACTION_DOWN) {
-            this.input.isTouched = true;
-        }
+        this.queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                input.onTouch(e);
+            }
+        });
 
         return true;
     }
+
+    @Override
+    public boolean onTrackballEvent(final MotionEvent e) {
+        this.queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                input.onBall(e);
+            }
+        });
+
+        return true;
+    }
+
+
 
 }
