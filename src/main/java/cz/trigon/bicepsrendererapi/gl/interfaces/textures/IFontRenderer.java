@@ -1,9 +1,10 @@
 package cz.trigon.bicepsrendererapi.gl.interfaces.textures;
 
+import cz.trigon.bicepsrendererapi.gl.interfaces.ILockable;
 import cz.trigon.bicepsrendererapi.util.Anchor;
 import cz.trigon.bicepsrendererapi.util.Vector2;
 
-public interface IFontRenderer {
+public interface IFontRenderer extends ILockable {
 
 	IFont getFont();
 

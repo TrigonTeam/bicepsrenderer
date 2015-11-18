@@ -3,6 +3,8 @@ package cz.trigon.bicepsrendererapi.gl.interfaces.render;
 import android.graphics.Color;
 import android.opengl.GLES20;
 
+import java.nio.ByteBuffer;
+
 import cz.trigon.bicepsrendererapi.gl.interfaces.textures.ITexture;
 import cz.trigon.bicepsrendererapi.gl.interfaces.bos.IFbo;
 import cz.trigon.bicepsrendererapi.gl.interfaces.bos.IVbo;
@@ -20,13 +22,21 @@ public interface IRenderer {
 
     void setPrimitiveMode(PrimitiveMode mode);
 
+    PrimitiveMode getPrimitiveMode();
+
     void setTexture(ITexture texture);
+
+    ITexture getTexture();
 
     void enableTexture(boolean enable);
 
     void setPointSize(float size);
 
+    float getPointSize();
+
     void setLineWidth(float width);
+
+    float getLineWidth();
 
     void setClearColor(float r, float g, float b, float a);
 
@@ -37,6 +47,14 @@ public interface IRenderer {
     void useFramebuffer(IFbo f);
 
     void useVertexbuffer(IVbo v);
+
+    IShader getShader();
+
+    IFbo getFramebuffer();
+
+    IVbo getVertexbuffer();
+
+    ByteBuffer getGraphicsBuffer();
 
     void clear();
 
