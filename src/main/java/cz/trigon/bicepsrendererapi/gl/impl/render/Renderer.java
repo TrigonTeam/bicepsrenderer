@@ -1,5 +1,6 @@
 package cz.trigon.bicepsrendererapi.gl.impl.render;
 
+import android.graphics.Color;
 import android.opengl.GLES20;
 
 import java.nio.ByteBuffer;
@@ -37,6 +38,12 @@ public class Renderer implements IRenderer{
             this.buffer.clear();
             this.atrp.postFlush();
         }
+    }
+
+    @Override
+    public void setClearColor(int color) {
+        this.setClearColor(Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f,
+                Color.alpha(color) / 255f);
     }
 
     @Override

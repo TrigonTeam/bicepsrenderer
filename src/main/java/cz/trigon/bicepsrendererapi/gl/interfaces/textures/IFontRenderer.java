@@ -20,10 +20,6 @@ public interface IFontRenderer extends ILockable {
 
 	void drawString(String string, float x, float y);
 
-	default void drawString(String string, Vector2 pos) {
-		drawString(string, pos.x(), pos.y());
-	}
-
 	float getStringWidth(String string);
 
 	float getStringHeight(String string);
