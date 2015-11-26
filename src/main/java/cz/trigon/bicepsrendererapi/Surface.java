@@ -14,7 +14,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     private Game game;
     private InputManager input;
 
-    protected int tps = 20, magicConstant = 1000000000;
+    protected int tps = 20, magicConstant = 1000000000; //TODO this should be changeable
     protected double tickTime = 1d / tps;
     protected double tickTimeSec = this.tickTime * this.magicConstant;
     protected long time, lastTime, lastInfo;
