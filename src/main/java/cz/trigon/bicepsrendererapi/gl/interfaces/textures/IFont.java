@@ -1,8 +1,8 @@
 package cz.trigon.bicepsrendererapi.gl.interfaces.textures;
 
-import cz.trigon.bicepsrendererapi.gl.interfaces.ILockable;
+import cz.trigon.bicepsrendererapi.gl.interfaces.ILocker;
 
-public interface IFont extends ILockable {
+public interface IFont extends ILocker {
 
     float getStringWidth(String string);
 
