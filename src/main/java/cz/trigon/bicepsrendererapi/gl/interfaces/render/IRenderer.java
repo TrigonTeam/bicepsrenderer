@@ -36,27 +36,13 @@ public interface IRenderer {
 
     void setClearColor(float r, float g, float b, float a);
 
-    void useAttributeProvider(IAttributeProvider a);
-
-    void useShader(IShader s);
-
-    void useFramebuffer(IFbo f);
-
-    void useVertexbuffer(IVbo v);
-
-    IShader getShader();
-
-    IFbo getFramebuffer();
-
-    IVbo getVertexbuffer();
-
-    ByteBuffer getGraphicsBuffer();
-
     void clear();
 
-    void clearBuffers();
-
     void cleanup();
+
+    void color(float r, float g, float b, float a);
+
+    void vertex(float x, float y);
 
     /**
      * Modes of primitive rendering
