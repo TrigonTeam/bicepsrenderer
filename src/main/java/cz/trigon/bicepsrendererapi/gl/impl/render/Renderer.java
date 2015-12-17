@@ -15,7 +15,7 @@ import cz.trigon.bicepsrendererapi.gl.interfaces.textures.ITexture;
 
 public class Renderer implements IRenderer{
 
-    public static final int BUFFER_SIZE = 1024 * 1024;
+    public static final int BUFFER_SIZE = 1024 * 1024 * 4; // 4MB
 
     private IAttributeProvider atrp;
     private ByteBuffer buffer;
@@ -33,7 +33,7 @@ public class Renderer implements IRenderer{
 
             GLES20.glFlush();
             this.buffer.flip();
-            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, Renderer.BUFFER_SIZE, this.buffer, GLES20.GL_DYNAMIC_DRAW);
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, Renderer.BUFFER_SIZE, this.buffer, GLES20.GL_STREAM_DRAW);
             this.atrp.onFlush();
             this.buffer.clear();
             this.atrp.postFlush();

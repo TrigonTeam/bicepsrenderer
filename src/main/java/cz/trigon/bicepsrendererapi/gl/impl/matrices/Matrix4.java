@@ -13,7 +13,7 @@ public class Matrix4 implements IMatrix {
         this.data = ByteBuffer.allocateDirect(4 * 4 * 4);
     }
 
-    public static Matrix4 getOrthoMatrix(float l, float r, float b, float t, float n, float f) {
+    public static Matrix4 makeOrthoMatrix(float l, float r, float b, float t, float n, float f) {
         Matrix4 mat = new Matrix4();
         FloatBuffer data = mat.getData().asFloatBuffer();
 
