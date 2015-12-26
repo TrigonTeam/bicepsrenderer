@@ -72,7 +72,7 @@ public class ContentManager implements IContentManager {
 
     public <T extends ILoadable> T get(String path, Class<T> type, boolean cache) throws IOException {
         ContentEntry e = this.pathMappings.get(path);
-        if(e == null || !e.isFile)
+        if(e == null)
             return null;
 
         if(cache && e.repr.containsKey(type))

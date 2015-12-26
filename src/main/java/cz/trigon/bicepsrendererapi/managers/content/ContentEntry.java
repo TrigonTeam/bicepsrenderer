@@ -17,6 +17,7 @@ class ContentEntry {
     ContentEntry parentEntry;
     List<String> files, directories;
     Map<Class<? extends ILoadable>, ILoadable> repr;
+    boolean preloaded;
 
     protected void addChild(ContentEntry e) {
         this.childEntries.add(e);
