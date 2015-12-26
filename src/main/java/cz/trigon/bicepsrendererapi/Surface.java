@@ -25,11 +25,13 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     protected long time, lastTime, lastInfo;
     protected int fps, ticks, currentFps;
 
-    public Surface(Context context, AssetManager asset) {
+
+
+    public Surface(Context context) {
         super(context);
 
         this.input = new InputManager(this);
-        this.content = new ContentManager(asset);
+        this.content = new ContentManager(context.getAssets());
 
         Content.init(this);
         Texture.init(this);
@@ -39,8 +41,8 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
         this.setRenderer(this);
     }
 
-    public Surface(Context context, AssetManager asset, Game game) {
-        this(context, asset);
+    public Surface(Context context, Game game) {
+        this(context);
         this.setGame(game);
     }
 
