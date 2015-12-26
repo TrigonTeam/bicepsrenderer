@@ -75,6 +75,16 @@ public class Texture implements ILoadable, ILockable, ITexture {
     }
 
     @Override
+    public int getId() {
+        return 0;
+    }
+
+    @Override
+    public boolean isInSpritesheet() {
+        return false;
+    }
+
+    @Override
     public Vector2 getSize() {
         return new Vector2(this.bitmap.getWidth(), this.bitmap.getHeight());
     }
