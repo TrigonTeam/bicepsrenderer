@@ -31,11 +31,12 @@ public class ContentManager implements IContentManager {
 
     private boolean isFile(String path) {
         try {
-            this.asset.list(path);
-            return false;
+            this.asset.open(path).close();
         } catch (IOException e) {
-            return true;
+            return false;
         }
+
+        return true;
     }
 
     // Slow like a verstopfung, it would be better to do compile-time indexing,
@@ -52,7 +53,7 @@ public class ContentManager implements IContentManager {
             for (String s : this.asset.list(entry.assetsPath)) {
                 String path = entry.assetsPath.equals("") ? s : (entry.assetsPath + "/" + s);
 
-                boolean file = this.isFile(s);
+                boolean file = this.isFile(path);
                 ContentEntry rE = new ContentEntry(file, path, s, entry);
                 entry.addChild(rE);
 
