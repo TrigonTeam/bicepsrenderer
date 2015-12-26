@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cz.trigon.bicepsrendererapi.Surface;
 import cz.trigon.bicepsrendererapi.managers.interfaces.IContentManager;
 
 public class ContentManager implements IContentManager {
@@ -41,7 +42,7 @@ public class ContentManager implements IContentManager {
         long start = System.nanoTime();
         this.load(this.root);
         long time = System.nanoTime() - start;
-        Log.i("TBR-Debug", "Load time: " + (time / 1000000d) + " ms");
+        Log.i(Surface.LDTAG, "Load time: " + (time / 1000000d) + " ms");
     }
 
     private void load(ContentEntry entry) throws IOException {
@@ -51,7 +52,7 @@ public class ContentManager implements IContentManager {
 
                 boolean file = this.isFile(s);
                 ContentEntry rE = new ContentEntry(file, path, s, entry);
-                entry.childEntries.add(rE);
+                entry.addChild(rE);
 
                 if(!file) {
                     this.load(rE);

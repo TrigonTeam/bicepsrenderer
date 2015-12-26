@@ -15,6 +15,9 @@ import cz.trigon.bicepsrendererapi.obj.Content;
 import cz.trigon.bicepsrendererapi.obj.Texture;
 
 public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
+
+    public static final String LDTAG = "TBR-Debug";
+
     private Game game;
     private InputManager input;
     private ContentManager content;
@@ -24,8 +27,6 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     protected double tickTimeSec = this.tickTime * this.magicConstant;
     protected long time, lastTime, lastInfo;
     protected int fps, ticks, currentFps;
-
-
 
     public Surface(Context context) {
         super(context);
