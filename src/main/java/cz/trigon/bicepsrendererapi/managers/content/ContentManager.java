@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InvalidClassException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,11 +65,34 @@ public class ContentManager implements IContentManager {
         }
     }
 
+    public <T extends ILoadable> T get(String path, Class<T> type) throws IOException {
+        return this.get(path, type, true);
+    }
 
-    public <T extends ILoadable> T get(String path, Class<T> type) {
+    public <T extends ILoadable> T get(String path, Class<T> type, boolean cache) throws IOException {
         ContentEntry e = this.pathMappings.get(path);
         if(e == null || !e.isFile)
             return null;
+
+        if(cache && e.repr.containsKey(type))
+            return (T) e.repr.get(type);
+
+        try {
+            T l = type.newInstance();
+            if(!l.canLoad(this, path))
+                throw new InvalidClassException(type.getName(),
+                        "Loaded data aren't represented by supplied ILoadable type");
+
+            l.load(this, path);
+
+            if(cache)
+                e.repr.put(type, l);
+
+            return l;
+
+        } catch (InstantiationException ex) {
+            Log.e(Surface.LDTAG, "Couldn't create " + type.getName() + " object", ex);
+        } catch (IllegalAccessException ignored) { }
 
         // TODO
 

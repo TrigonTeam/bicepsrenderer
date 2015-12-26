@@ -11,7 +11,7 @@ import cz.trigon.bicepsrendererapi.managers.content.ContentPreloader;
 import cz.trigon.bicepsrendererapi.managers.interfaces.ILoadable;
 import cz.trigon.bicepsrendererapi.managers.interfaces.IContentManager;
 
-public class Content implements IContentManager {
+public class Content implements  IContentManager {
     private static Surface surface;
 
     public static void init(Surface s) {
@@ -30,7 +30,12 @@ public class Content implements IContentManager {
     }
 
     @Override
-    public <T extends ILoadable> T get(String path, Class<T> type) {
+    public <T extends ILoadable> T get(String path, Class<T> type, boolean cache) throws IOException {
+        return this.c.get(path, type, cache);
+    }
+
+    @Override
+    public <T extends ILoadable> T get(String path, Class<T> type) throws IOException {
         return this.c.get(path, type);
     }
 
