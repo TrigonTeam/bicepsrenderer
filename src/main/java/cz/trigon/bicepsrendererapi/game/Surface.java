@@ -1,15 +1,13 @@
-package cz.trigon.bicepsrendererapi;
+package cz.trigon.bicepsrendererapi.game;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import cz.trigon.bicepsrendererapi.content.ContentManager;
-import cz.trigon.bicepsrendererapi.game.Game;
+import cz.trigon.bicepsrendererapi.managers.content.ContentManager;
 import cz.trigon.bicepsrendererapi.managers.InputManager;
 import cz.trigon.bicepsrendererapi.obj.Content;
 import cz.trigon.bicepsrendererapi.obj.Texture;

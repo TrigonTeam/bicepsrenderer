@@ -1,6 +1,6 @@
 package cz.trigon.bicepsrendererapi.obj;
 
-import cz.trigon.bicepsrendererapi.Surface;
+import cz.trigon.bicepsrendererapi.game.Surface;
 
 public class Texture {
     private static Surface surface;

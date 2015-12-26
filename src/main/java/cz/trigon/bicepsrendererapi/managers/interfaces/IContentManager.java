@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import cz.trigon.bicepsrendererapi.content.ContentPreloader;
-import cz.trigon.bicepsrendererapi.content.ILoadable;
+import cz.trigon.bicepsrendererapi.managers.content.ContentPreloader;
 
 public interface IContentManager {
     void load() throws IOException;

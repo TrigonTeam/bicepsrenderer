@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import cz.trigon.bicepsrendererapi.Surface;
-import cz.trigon.bicepsrendererapi.content.ContentManager;
-import cz.trigon.bicepsrendererapi.content.ContentPreloader;
-import cz.trigon.bicepsrendererapi.content.ILoadable;
+import cz.trigon.bicepsrendererapi.game.Surface;
+import cz.trigon.bicepsrendererapi.managers.content.ContentManager;
+import cz.trigon.bicepsrendererapi.managers.content.ContentPreloader;
+import cz.trigon.bicepsrendererapi.managers.interfaces.ILoadable;
 import cz.trigon.bicepsrendererapi.managers.interfaces.IContentManager;
 
 public class Content implements IContentManager {

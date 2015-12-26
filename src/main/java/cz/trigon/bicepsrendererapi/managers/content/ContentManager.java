@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cz.trigon.bicepsrendererapi.Surface;
+import cz.trigon.bicepsrendererapi.game.Surface;
 import cz.trigon.bicepsrendererapi.managers.interfaces.IContentManager;
 
 public class ContentManager implements IContentManager {

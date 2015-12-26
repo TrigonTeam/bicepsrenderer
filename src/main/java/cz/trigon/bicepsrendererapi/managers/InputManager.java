@@ -2,7 +2,7 @@ package cz.trigon.bicepsrendererapi.managers;
 
 import android.view.MotionEvent;
 
-import cz.trigon.bicepsrendererapi.Surface;
+import cz.trigon.bicepsrendererapi.game.Surface;
 
 public class InputManager {
     private Surface context;

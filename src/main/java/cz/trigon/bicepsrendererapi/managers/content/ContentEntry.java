@@ -1,4 +1,4 @@
-package cz.trigon.bicepsrendererapi.content;
+package cz.trigon.bicepsrendererapi.managers.content;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package cz.trigon.bicepsrendererapi.gl.impl.matrices;
+package cz.trigon.bicepsrendererapi.gl.matrices;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
