@@ -1,18 +1,23 @@
 package cz.trigon.bicepsrendererapi;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import cz.trigon.bicepsrendererapi.content.ContentManager;
 import cz.trigon.bicepsrendererapi.game.Game;
 import cz.trigon.bicepsrendererapi.managers.InputManager;
+import cz.trigon.bicepsrendererapi.obj.Content;
+import cz.trigon.bicepsrendererapi.obj.Texture;
 
 public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     private Game game;
     private InputManager input;
+    private ContentManager content;
 
     protected int tps = 20, magicConstant = 1000000000; //TODO this should be changeable
     protected double tickTime = 1d / tps;
@@ -20,18 +25,31 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     protected long time, lastTime, lastInfo;
     protected int fps, ticks, currentFps;
 
-    public Surface(Context context) {
+    public Surface(Context context, AssetManager asset) {
         super(context);
+
         this.input = new InputManager(this);
+        this.content = new ContentManager(asset);
+
+        Content.init(this);
+        Texture.init(this);
 
         this.setEGLContextClientVersion(2);
         this.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         this.setRenderer(this);
     }
 
-    public Surface(Context context, Game game) {
-        this(context);
+    public Surface(Context context, AssetManager asset, Game game) {
+        this(context, asset);
         this.setGame(game);
+    }
+
+    public InputManager getInput() {
+        return this.input;
+    }
+
+    public ContentManager getContent() {
+        return this.content;
     }
 
     public void setGame(Game game) {

@@ -1,0 +1,18 @@
+package cz.trigon.bicepsrendererapi.managers.interfaces;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import cz.trigon.bicepsrendererapi.content.ContentPreloader;
+import cz.trigon.bicepsrendererapi.content.ILoadable;
+
+public interface IContentManager {
+    void load() throws IOException;
+    <T extends ILoadable> T get(String path, Class<T> type);
+    List<String> listFiles(String dir);
+    List<String> listDirectories(String dir);
+    InputStream openStream(String path, int mode) throws IOException;
+    InputStream openStream(String path) throws IOException;
+    ContentPreloader getPreloader();
+}

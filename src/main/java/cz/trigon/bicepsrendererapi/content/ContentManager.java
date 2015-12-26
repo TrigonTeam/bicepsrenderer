@@ -10,14 +10,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Content {
+import cz.trigon.bicepsrendererapi.managers.interfaces.IContentManager;
+
+public class ContentManager implements IContentManager {
 
     private ContentEntry root;
     private AssetManager asset;
     private ContentPreloader preloader;
     private Map<String, ContentEntry> pathMappings;
 
-    public Content(AssetManager assetManager) {
+    public ContentManager(AssetManager assetManager) {
         this.asset = assetManager;
         this.root = new ContentEntry(false, "", "root", null);
         this.pathMappings = new HashMap<>();
