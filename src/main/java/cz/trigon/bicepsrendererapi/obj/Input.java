@@ -1,4 +1,4 @@
-package cz.trigon.bicepsrendererapi;
+package cz.trigon.bicepsrendererapi.obj;
 
 public class Input {
     // TODO

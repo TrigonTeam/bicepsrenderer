@@ -1,4 +1,4 @@
-package cz.trigon.bicepsrendererapi.content;
+package cz.trigon.bicepsrendererapi.managers.content;
 
 import android.content.res.AssetManager;
 import android.util.Log;
@@ -12,6 +12,7 @@ import java.util.Map;
 
 import cz.trigon.bicepsrendererapi.game.Surface;
 import cz.trigon.bicepsrendererapi.managers.interfaces.IContentManager;
+import cz.trigon.bicepsrendererapi.managers.interfaces.ILoadable;
 
 public class ContentManager implements IContentManager {
 
