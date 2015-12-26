@@ -1,7 +1,11 @@
-package cz.trigon.bicepsrendererapi.content;
+package cz.trigon.bicepsrendererapi.managers.content;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import cz.trigon.bicepsrendererapi.managers.interfaces.ILoadable;
 
 // This class does all the dirty work
 class ContentEntry {
@@ -12,6 +16,7 @@ class ContentEntry {
     String name;
     ContentEntry parentEntry;
     List<String> files, directories;
+    Map<Class<? extends ILoadable>, ILoadable> repr;
 
     protected void addChild(ContentEntry e) {
         this.childEntries.add(e);
@@ -29,6 +34,7 @@ class ContentEntry {
             this.directories = new ArrayList<>();
         }
 
+        this.repr = new HashMap<>();
         this.isFile = isFile;
     }
 

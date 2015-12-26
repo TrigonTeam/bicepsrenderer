@@ -1,4 +1,4 @@
-package cz.trigon.bicepsrendererapi.gl.impl.render;
+package cz.trigon.bicepsrendererapi.gl.render;
 
 import android.graphics.Color;
 import android.opengl.GLES20;

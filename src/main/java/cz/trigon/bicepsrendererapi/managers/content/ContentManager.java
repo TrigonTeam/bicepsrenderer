@@ -1,23 +1,28 @@
-package cz.trigon.bicepsrendererapi.content;
+package cz.trigon.bicepsrendererapi.managers.content;
 
 import android.content.res.AssetManager;
 import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InvalidClassException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Content {
+import cz.trigon.bicepsrendererapi.game.Surface;
+import cz.trigon.bicepsrendererapi.managers.interfaces.IContentManager;
+import cz.trigon.bicepsrendererapi.managers.interfaces.ILoadable;
+
+public class ContentManager implements IContentManager {
 
     private ContentEntry root;
     private AssetManager asset;
     private ContentPreloader preloader;
     private Map<String, ContentEntry> pathMappings;
 
-    public Content(AssetManager assetManager) {
+    public ContentManager(AssetManager assetManager) {
         this.asset = assetManager;
         this.root = new ContentEntry(false, "", "root", null);
         this.pathMappings = new HashMap<>();
@@ -39,7 +44,7 @@ public class Content {
         long start = System.nanoTime();
         this.load(this.root);
         long time = System.nanoTime() - start;
-        Log.i("TBR-Debug", "Load time: " + (time / 1000000d) + " ms");
+        Log.i(Surface.LDTAG, "Load time: " + (time / 1000000d) + " ms");
     }
 
     private void load(ContentEntry entry) throws IOException {
@@ -49,7 +54,7 @@ public class Content {
 
                 boolean file = this.isFile(s);
                 ContentEntry rE = new ContentEntry(file, path, s, entry);
-                entry.childEntries.add(rE);
+                entry.addChild(rE);
 
                 if(!file) {
                     this.load(rE);
@@ -60,11 +65,34 @@ public class Content {
         }
     }
 
+    public <T extends ILoadable> T get(String path, Class<T> type) throws IOException {
+        return this.get(path, type, true);
+    }
 
-    public <T extends ILoadable> T get(String path, Class<T> type) {
+    public <T extends ILoadable> T get(String path, Class<T> type, boolean cache) throws IOException {
         ContentEntry e = this.pathMappings.get(path);
         if(e == null || !e.isFile)
             return null;
+
+        if(cache && e.repr.containsKey(type))
+            return (T) e.repr.get(type);
+
+        try {
+            T l = type.newInstance();
+            if(!l.canLoad(this, path))
+                throw new InvalidClassException(type.getName(),
+                        "Loaded data aren't represented by supplied ILoadable type");
+
+            l.load(this, path);
+
+            if(cache)
+                e.repr.put(type, l);
+
+            return l;
+
+        } catch (InstantiationException ex) {
+            Log.e(Surface.LDTAG, "Couldn't create " + type.getName() + " object", ex);
+        } catch (IllegalAccessException ignored) { }
 
         // TODO
 

@@ -1,6 +1,4 @@
-package cz.trigon.bicepsrendererapi.gl.impl.render;
-
-import java.nio.ByteBuffer;
+package cz.trigon.bicepsrendererapi.gl.render;
 
 import cz.trigon.bicepsrendererapi.gl.interfaces.render.IRenderer;
 

@@ -2,8 +2,6 @@ package cz.trigon.bicepsrendererapi.game;
 
 import android.content.Context;
 
-import cz.trigon.bicepsrendererapi.Surface;
-
 public abstract class Game {
     protected Surface surface;
     protected Context context;
