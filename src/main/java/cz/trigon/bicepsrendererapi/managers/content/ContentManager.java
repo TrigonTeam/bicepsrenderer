@@ -49,7 +49,7 @@ public class ContentManager implements IContentManager {
     }
 
     private void load(ContentEntry entry) throws IOException {
-        if(!entry.isFile) {
+        if (!entry.isFile) {
             for (String s : this.asset.list(entry.assetsPath)) {
                 String path = entry.assetsPath.equals("") ? s : (entry.assetsPath + "/" + s);
 
@@ -57,7 +57,7 @@ public class ContentManager implements IContentManager {
                 ContentEntry rE = new ContentEntry(file, path, s, entry);
                 entry.addChild(rE);
 
-                if(!file) {
+                if (!file) {
                     this.load(rE);
                 }
 
@@ -72,28 +72,29 @@ public class ContentManager implements IContentManager {
 
     public <T extends ILoadable> T get(String path, Class<T> type, boolean cache) throws IOException {
         ContentEntry e = this.pathMappings.get(path);
-        if(e == null)
+        if (e == null)
             return null;
 
-        if(cache && e.repr.containsKey(type))
+        if (cache && e.repr.containsKey(type))
             return (T) e.repr.get(type);
 
         try {
             T l = type.newInstance();
-            if(!l.canLoad(this, path))
+            if (!l.canLoad(this, path))
                 throw new InvalidClassException(type.getName(),
                         "Loaded data aren't represented by supplied ILoadable type");
 
             l.load(this, path);
 
-            if(cache)
+            if (cache)
                 e.repr.put(type, l);
 
             return l;
 
         } catch (InstantiationException ex) {
             Log.e(Surface.LDTAG, "Couldn't create " + type.getName() + " object", ex);
-        } catch (IllegalAccessException ignored) { }
+        } catch (IllegalAccessException ignored) {
+        }
 
         // TODO
 
@@ -102,7 +103,7 @@ public class ContentManager implements IContentManager {
 
     public List<String> listFiles(String dir) {
         ContentEntry e = this.pathMappings.get(dir);
-        if(e == null || e.isFile)
+        if (e == null || e.isFile)
             return null;
 
         return new ArrayList<String>(e.files);
@@ -110,7 +111,7 @@ public class ContentManager implements IContentManager {
 
     public List<String> listDirectories(String dir) {
         ContentEntry e = this.pathMappings.get(dir);
-        if(e == null || e.isFile)
+        if (e == null || e.isFile)
             return null;
 
         return new ArrayList<String>(e.directories);
@@ -118,7 +119,7 @@ public class ContentManager implements IContentManager {
 
     public InputStream openStream(String path, int mode) throws IOException {
         ContentEntry e = this.pathMappings.get(path);
-        if(e == null || !e.isFile)
+        if (e == null || !e.isFile)
             return null;
 
         return this.asset.open(e.assetsPath, mode);
@@ -126,6 +127,25 @@ public class ContentManager implements IContentManager {
 
     public InputStream openStream(String path) throws IOException {
         return this.openStream(path, AssetManager.ACCESS_STREAMING);
+    }
+
+    public String combine(String... parts) {
+        StringBuilder b = new StringBuilder(parts.length * 2);
+        if (!parts[0].startsWith("/"))
+            b.append('/');
+
+        for (int i = 0; i < parts.length; i++) {
+            if (!parts[i].endsWith("/") && i != (parts.length - 1))
+                parts[i] += "/";
+
+            b.append(parts[i]);
+        }
+
+        return b.toString();
+    }
+
+    public boolean containsFile(String path) {
+        return this.pathMappings.containsKey(path);
     }
 
     public ContentPreloader getPreloader() {
