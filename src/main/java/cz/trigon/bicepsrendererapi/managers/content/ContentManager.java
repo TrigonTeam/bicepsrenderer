@@ -6,6 +6,8 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InvalidClassException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +51,7 @@ public class ContentManager implements IContentManager {
     }
 
     private void load(ContentEntry entry) throws IOException {
-        if(!entry.isFile) {
+        if (!entry.isFile) {
             for (String s : this.asset.list(entry.assetsPath)) {
                 String path = entry.assetsPath.equals("") ? s : (entry.assetsPath + "/" + s);
 
@@ -57,7 +59,7 @@ public class ContentManager implements IContentManager {
                 ContentEntry rE = new ContentEntry(file, path, s, entry);
                 entry.addChild(rE);
 
-                if(!file) {
+                if (!file) {
                     this.load(rE);
                 }
 
@@ -70,39 +72,58 @@ public class ContentManager implements IContentManager {
         return this.get(path, type, true);
     }
 
-    public <T extends ILoadable> T get(String path, Class<T> type, boolean cache) throws IOException {
+    public <T extends ILoadable> T get(String path, Class<T> type, boolean cache, Object... parameters) throws IOException {
         ContentEntry e = this.pathMappings.get(path);
-        if(e == null)
+        if (e == null)
             return null;
 
-        if(cache && e.repr.containsKey(type))
+        if (cache && e.repr.containsKey(type))
             return (T) e.repr.get(type);
 
         try {
-            T l = type.newInstance();
-            if(!l.canLoad(this, path))
+            T l;
+
+            if (parameters == null || parameters.length == 0)
+                l = type.newInstance();
+            else {
+                Class<?>[] pars = new Class<?>[parameters.length];
+
+                for (int i = 0; i < pars.length; i++) {
+                    pars[i] = parameters[i].getClass();
+                }
+
+                Constructor<T> constructor = type.getConstructor(pars);
+                l = constructor.newInstance(parameters);
+            }
+
+            if (!l.canLoad(this, path))
                 throw new InvalidClassException(type.getName(),
                         "Loaded data aren't represented by supplied ILoadable type");
 
             l.load(this, path);
 
-            if(cache)
+            if (cache)
                 e.repr.put(type, l);
 
             return l;
 
         } catch (InstantiationException ex) {
-            Log.e(Surface.LDTAG, "Couldn't create " + type.getName() + " object", ex);
-        } catch (IllegalAccessException ignored) { }
-
-        // TODO
+            Log.e(Surface.LDTAG, "Couldn't create " + type.getName() +
+                    " object - constructor isn't accessible", ex);
+        } catch (IllegalAccessException ignored) {
+        } catch (NoSuchMethodException ex) {
+            Log.e(Surface.LDTAG, "Couldn't find specified constructor in type " + type.getName());
+        } catch (InvocationTargetException ex) {
+            Log.e(Surface.LDTAG, "Couldn't create " + type.getName() +
+                    " object - constructor threw an exception", ex.getTargetException());
+        }
 
         return null;
     }
 
     public List<String> listFiles(String dir) {
         ContentEntry e = this.pathMappings.get(dir);
-        if(e == null || e.isFile)
+        if (e == null || e.isFile)
             return null;
 
         return new ArrayList<String>(e.files);
@@ -110,7 +131,7 @@ public class ContentManager implements IContentManager {
 
     public List<String> listDirectories(String dir) {
         ContentEntry e = this.pathMappings.get(dir);
-        if(e == null || e.isFile)
+        if (e == null || e.isFile)
             return null;
 
         return new ArrayList<String>(e.directories);
@@ -118,7 +139,7 @@ public class ContentManager implements IContentManager {
 
     public InputStream openStream(String path, int mode) throws IOException {
         ContentEntry e = this.pathMappings.get(path);
-        if(e == null || !e.isFile)
+        if (e == null || !e.isFile)
             return null;
 
         return this.asset.open(e.assetsPath, mode);
@@ -126,6 +147,25 @@ public class ContentManager implements IContentManager {
 
     public InputStream openStream(String path) throws IOException {
         return this.openStream(path, AssetManager.ACCESS_STREAMING);
+    }
+
+    public String combine(String... parts) {
+        StringBuilder b = new StringBuilder(parts.length * 2);
+        if (!parts[0].startsWith("/"))
+            b.append('/');
+
+        for (int i = 0; i < parts.length; i++) {
+            if (!parts[i].endsWith("/") && i != (parts.length - 1))
+                parts[i] += "/";
+
+            b.append(parts[i]);
+        }
+
+        return b.toString();
+    }
+
+    public boolean containsFile(String path) {
+        return this.pathMappings.containsKey(path);
     }
 
     public ContentPreloader getPreloader() {

@@ -38,4 +38,8 @@ public class Spritesheet implements ISpritesheet, ILoadable {
     public boolean canLoad(ContentManager content, String path) {
         return false;
     }
+
+    public void sort(String[] ssFileArgs) {
+
+    }
 }
