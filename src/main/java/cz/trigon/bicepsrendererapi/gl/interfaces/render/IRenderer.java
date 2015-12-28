@@ -36,8 +36,6 @@ public interface IRenderer {
 
     void setClearColor(float r, float g, float b, float a);
 
-    void useAttributeProvider(IAttributeProvider a);
-
     void useShader(IShader s);
 
     void useFramebuffer(IFbo f);

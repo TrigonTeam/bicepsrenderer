@@ -8,7 +8,6 @@ import java.nio.ByteOrder;
 
 import cz.trigon.bicepsrendererapi.gl.interfaces.bos.IFbo;
 import cz.trigon.bicepsrendererapi.gl.interfaces.bos.IVbo;
-import cz.trigon.bicepsrendererapi.gl.interfaces.render.IAttributeProvider;
 import cz.trigon.bicepsrendererapi.gl.interfaces.render.IRenderer;
 import cz.trigon.bicepsrendererapi.gl.interfaces.shaders.IShader;
 import cz.trigon.bicepsrendererapi.gl.interfaces.textures.ITexture;
@@ -17,7 +16,7 @@ public class Renderer implements IRenderer{
 
     public static final int BUFFER_SIZE = 1024 * 1024 * 4; // 4MB
 
-    private IAttributeProvider atrp;
+    //private IAttributeProvider atrp;
     private ByteBuffer buffer;
     private PrimitiveMode primitiveMode;
 
@@ -28,16 +27,14 @@ public class Renderer implements IRenderer{
 
     @Override
     public void flush() {
-        if(this.atrp.canFlush()) {
-            this.atrp.preFlush();
+            //GLES20.glFlush();
 
-            GLES20.glFlush();
+
             this.buffer.flip();
             GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, Renderer.BUFFER_SIZE, this.buffer, GLES20.GL_STREAM_DRAW);
-            this.atrp.onFlush();
+            //this.atrp.onFlush();
             this.buffer.clear();
-            this.atrp.postFlush();
-        }
+
     }
 
     @Override
@@ -96,11 +93,11 @@ public class Renderer implements IRenderer{
 
     }
 
-    @Override
+    /*@Override
     public void useAttributeProvider(IAttributeProvider a) {
         this.atrp = a;
         a.useBuffer(this.buffer);
-    }
+    }*/
 
     @Override
     public void useShader(IShader s) {
