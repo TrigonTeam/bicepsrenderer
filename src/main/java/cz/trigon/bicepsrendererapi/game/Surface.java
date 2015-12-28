@@ -33,9 +33,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
 
         this.input = new InputManager(this);
         this.content = new ContentManager(context.getAssets());
-
-        Content.init(this);
-        Texture.init(this);
+        this.bindWrappers();
 
         this.setEGLContextClientVersion(2);
         this.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
