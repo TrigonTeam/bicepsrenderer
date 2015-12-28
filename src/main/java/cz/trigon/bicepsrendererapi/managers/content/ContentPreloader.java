@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 import cz.trigon.bicepsrendererapi.game.Surface;
 import cz.trigon.bicepsrendererapi.managers.interfaces.ILoadable;
-import cz.trigon.bicepsrendererapi.obj.Content;
 import cz.trigon.bicepsrendererapi.obj.Spritesheet;
 import cz.trigon.bicepsrendererapi.obj.Texture;
 
@@ -54,12 +53,9 @@ public class ContentPreloader {
             while ((line = bf.readLine()) != null) {
                 String[] parts = line.split(";");
                 Spritesheet s = this.content.get(this.content.combine(path, parts[1]),
-                        Spritesheet.class);
+                        Spritesheet.class, true, new Object[] { parts });
 
-                if (parts[0].equalsIgnoreCase("dir")) {
-                    if(s != null)
-                        s.sort(parts);
-                } else {
+                if (parts[0].equalsIgnoreCase("file")) {
                     ssFiles.add(parts[1].toLowerCase());
                 }
             }

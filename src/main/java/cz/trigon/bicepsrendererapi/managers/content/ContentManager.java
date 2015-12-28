@@ -69,10 +69,11 @@ public class ContentManager implements IContentManager {
     }
 
     public <T extends ILoadable> T get(String path, Class<T> type) throws IOException {
-        return this.get(path, type, true);
+        return this.get(path, type, true, null, null);
     }
 
-    public <T extends ILoadable> T get(String path, Class<T> type, boolean cache, Object... parameters) throws IOException {
+    public <T extends ILoadable> T get(String path, Class<T> type, boolean cache,
+                                       Object[] parameters, Class<?>[] classes) throws IOException {
         ContentEntry e = this.pathMappings.get(path);
         if (e == null)
             return null;
@@ -83,16 +84,10 @@ public class ContentManager implements IContentManager {
         try {
             T l;
 
-            if (parameters == null || parameters.length == 0)
+            if (parameters == null || classes == null || parameters.length == 0)
                 l = type.newInstance();
             else {
-                Class<?>[] pars = new Class<?>[parameters.length];
-
-                for (int i = 0; i < pars.length; i++) {
-                    pars[i] = parameters[i].getClass();
-                }
-
-                Constructor<T> constructor = type.getConstructor(pars);
+                Constructor<T> constructor = type.getConstructor(classes);
                 l = constructor.newInstance(parameters);
             }
 
@@ -119,6 +114,18 @@ public class ContentManager implements IContentManager {
         }
 
         return null;
+    }
+
+    @Override
+    public <T extends ILoadable> T get(String path, Class<T> type, boolean cache, Object... parameters) throws IOException {
+        Class<?>[] pars = new Class<?>[parameters.length];
+
+        for (int i = 0; i < pars.length; i++) {
+            if (parameters[i] != null)
+                pars[i] = parameters[i].getClass();
+        }
+
+        return this.get(path, type, cache, parameters, pars);
     }
 
     public List<String> listFiles(String dir) {
