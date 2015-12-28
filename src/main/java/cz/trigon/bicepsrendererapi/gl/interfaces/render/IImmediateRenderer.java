@@ -10,7 +10,7 @@ import cz.trigon.bicepsrendererapi.gl.interfaces.bos.IVbo;
 import cz.trigon.bicepsrendererapi.gl.interfaces.shaders.IShader;
 
 
-public interface IRenderer {
+public interface IImmediateRenderer {
 
     void setClearColor(int color);
 

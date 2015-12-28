@@ -8,11 +8,11 @@ import java.nio.ByteOrder;
 
 import cz.trigon.bicepsrendererapi.gl.interfaces.bos.IFbo;
 import cz.trigon.bicepsrendererapi.gl.interfaces.bos.IVbo;
-import cz.trigon.bicepsrendererapi.gl.interfaces.render.IRenderer;
+import cz.trigon.bicepsrendererapi.gl.interfaces.render.IImmediateRenderer;
 import cz.trigon.bicepsrendererapi.gl.interfaces.shaders.IShader;
 import cz.trigon.bicepsrendererapi.gl.interfaces.textures.ITexture;
 
-public class Renderer implements IRenderer{
+public class ImmediateRenderer implements IImmediateRenderer {
 
     public static final int BUFFER_SIZE = 1024 * 1024 * 4; // 4MB
 
@@ -20,8 +20,8 @@ public class Renderer implements IRenderer{
     private ByteBuffer buffer;
     private PrimitiveMode primitiveMode;
 
-    public Renderer() {
-        this.buffer = ByteBuffer.allocateDirect(Renderer.BUFFER_SIZE);
+    public ImmediateRenderer() {
+        this.buffer = ByteBuffer.allocateDirect(ImmediateRenderer.BUFFER_SIZE);
         this.buffer.order(ByteOrder.nativeOrder());
     }
 
@@ -31,7 +31,7 @@ public class Renderer implements IRenderer{
 
 
             this.buffer.flip();
-            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, Renderer.BUFFER_SIZE, this.buffer, GLES20.GL_STREAM_DRAW);
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, ImmediateRenderer.BUFFER_SIZE, this.buffer, GLES20.GL_STREAM_DRAW);
             //this.atrp.onFlush();
             this.buffer.clear();
 
