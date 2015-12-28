@@ -6,6 +6,8 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InvalidClassException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +72,7 @@ public class ContentManager implements IContentManager {
         return this.get(path, type, true);
     }
 
-    public <T extends ILoadable> T get(String path, Class<T> type, boolean cache) throws IOException {
+    public <T extends ILoadable> T get(String path, Class<T> type, boolean cache, Object... parameters) throws IOException {
         ContentEntry e = this.pathMappings.get(path);
         if (e == null)
             return null;
@@ -79,7 +81,21 @@ public class ContentManager implements IContentManager {
             return (T) e.repr.get(type);
 
         try {
-            T l = type.newInstance();
+            T l;
+
+            if (parameters == null || parameters.length == 0)
+                l = type.newInstance();
+            else {
+                Class<?>[] pars = new Class<?>[parameters.length];
+
+                for (int i = 0; i < pars.length; i++) {
+                    pars[i] = parameters[i].getClass();
+                }
+
+                Constructor<T> constructor = type.getConstructor(pars);
+                l = constructor.newInstance(parameters);
+            }
+
             if (!l.canLoad(this, path))
                 throw new InvalidClassException(type.getName(),
                         "Loaded data aren't represented by supplied ILoadable type");
@@ -92,11 +108,15 @@ public class ContentManager implements IContentManager {
             return l;
 
         } catch (InstantiationException ex) {
-            Log.e(Surface.LDTAG, "Couldn't create " + type.getName() + " object", ex);
+            Log.e(Surface.LDTAG, "Couldn't create " + type.getName() +
+                    " object - constructor isn't accessible", ex);
         } catch (IllegalAccessException ignored) {
+        } catch (NoSuchMethodException ex) {
+            Log.e(Surface.LDTAG, "Couldn't find specified constructor in type " + type.getName());
+        } catch (InvocationTargetException ex) {
+            Log.e(Surface.LDTAG, "Couldn't create " + type.getName() +
+                    " object - constructor threw an exception", ex.getTargetException());
         }
-
-        // TODO
 
         return null;
     }
