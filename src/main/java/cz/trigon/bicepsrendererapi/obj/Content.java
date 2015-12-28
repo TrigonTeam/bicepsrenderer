@@ -30,8 +30,13 @@ public class Content implements  IContentManager {
     }
 
     @Override
-    public <T extends ILoadable> T get(String path, Class<T> type, boolean cache) throws IOException {
-        return this.c.get(path, type, cache);
+    public <T extends ILoadable> T get(String path, Class<T> type, boolean cache, Object[] parameters, Class<?>[] parameterTypes) throws IOException {
+        return this.c.get(path, type, cache, parameters, parameterTypes);
+    }
+
+    @Override
+    public <T extends ILoadable> T get(String path, Class<T> type, boolean cache, Object... parameters) throws IOException {
+        return this.c.get(path, type, cache, parameters);
     }
 
     @Override

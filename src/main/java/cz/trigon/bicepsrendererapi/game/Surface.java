@@ -10,6 +10,8 @@ import javax.microedition.khronos.opengles.GL10;
 import cz.trigon.bicepsrendererapi.managers.content.ContentManager;
 import cz.trigon.bicepsrendererapi.managers.InputManager;
 import cz.trigon.bicepsrendererapi.obj.Content;
+import cz.trigon.bicepsrendererapi.obj.Input;
+import cz.trigon.bicepsrendererapi.obj.Spritesheet;
 import cz.trigon.bicepsrendererapi.obj.Texture;
 
 public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
@@ -43,6 +45,13 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     public Surface(Context context, Game game) {
         this(context);
         this.setGame(game);
+    }
+
+    public void bindWrappers() {
+        Content.init(this);
+        Texture.init(this);
+        Spritesheet.init(this);
+        Input.init(this);
     }
 
     public InputManager getInput() {
