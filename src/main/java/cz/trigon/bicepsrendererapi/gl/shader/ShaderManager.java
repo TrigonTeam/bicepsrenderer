@@ -1,6 +1,7 @@
 package cz.trigon.bicepsrendererapi.gl.shader;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +16,6 @@ import cz.trigon.bicepsrendererapi.game.Surface;
 import cz.trigon.bicepsrendererapi.gl.interfaces.shaders.IShader;
 import cz.trigon.bicepsrendererapi.gl.interfaces.shaders.IShaderManager;
 
-// TODO Proper exception handling
 public class ShaderManager implements IShaderManager {
 
     private Surface surface;
@@ -164,7 +164,7 @@ public class ShaderManager implements IShaderManager {
             return id;
         } catch (Exception e) {
             GLES20.glDeleteShader(id);
-            e.printStackTrace();
+            Log.e(Surface.LDTAG, "Couldn't compile shader", e);
             return 0;
         }
     }
@@ -195,8 +195,8 @@ public class ShaderManager implements IShaderManager {
             }
 
         } catch (Exception e) {
+            Log.e(Surface.LDTAG, "Couldn't validate program", e);
             GLES20.glDeleteProgram(prog);
-            e.printStackTrace();
             return 0;
         }
 
