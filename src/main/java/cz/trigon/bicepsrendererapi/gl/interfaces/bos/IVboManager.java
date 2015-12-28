@@ -4,6 +4,10 @@ public interface IVboManager {
 
     IVbo getVbo(String name);
 
+    void bind(IVbo toBind);
+
+    void bind(String name);
+
     void deleteVbo(String name);
 
 }

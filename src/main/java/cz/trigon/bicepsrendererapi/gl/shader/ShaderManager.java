@@ -20,6 +20,8 @@ public class ShaderManager implements IShaderManager {
 
     private Surface surface;
 
+    private int current = 0;
+
     private Map<String, Shader> shaders;
 
     public ShaderManager(Surface surface) {
@@ -70,6 +72,20 @@ public class ShaderManager implements IShaderManager {
     @Override
     public IShader getShader(String name) {
         return this.shaders.get(name);
+    }
+
+    @Override
+    public void bind(IShader toBind) {
+        int id = toBind.getId();
+        if (this.current == id) {
+            GLES20.glUseProgram(id);
+            this.current = id;
+        }
+    }
+
+    @Override
+    public void bind(String name) {
+        bind(getShader(name));
     }
 
     @Override

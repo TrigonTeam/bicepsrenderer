@@ -5,5 +5,7 @@ public interface IVbo {
 
     int getId();
 
+    void bind();
+
     void delete();
 }

@@ -35,6 +35,11 @@ public class Shader implements IShader{
     }
 
     @Override
+    public void bind() {
+        this.mgr.bind(this);
+    }
+
+    @Override
     public void setUniform1f(String name, float val1) {
         if (hasUniform(name)) {
             GLES20.glUniform1f(this.variables.getUniform(name), val1);

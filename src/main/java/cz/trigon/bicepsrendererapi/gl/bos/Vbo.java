@@ -27,6 +27,11 @@ public class Vbo implements IVbo {
     }
 
     @Override
+    public void bind() {
+        this.mgr.bind(this);
+    }
+
+    @Override
     public void delete() {
         this.mgr.deleteVbo(this.name);
     }

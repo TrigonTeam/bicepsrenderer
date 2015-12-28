@@ -10,6 +10,8 @@ public interface IShader {
 
     String getName();
 
+    void bind();
+
     void setUniform1f(String name, float val1);
 
     void setUniform2f(String name, float val1, float val2);
