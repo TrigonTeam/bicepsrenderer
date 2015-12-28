@@ -1,10 +1,12 @@
 package cz.trigon.bicepsrendererapi.gl.interfaces.shaders;
 
+import java.nio.FloatBuffer;
+
 import cz.trigon.bicepsrendererapi.gl.interfaces.matrices.IMatrix;
 
 public interface IShader {
 
-    int getProgramId();
+    int getId();
 
     String getName();
 
@@ -34,6 +36,10 @@ public interface IShader {
 
     boolean hasAttribute(String name);
 
+    int getUniformLocation(String name);
+
     int getAttribLocation(String name);
+
+    void deleteShader();
 
 }
