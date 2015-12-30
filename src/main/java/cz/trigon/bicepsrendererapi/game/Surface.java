@@ -1,7 +1,10 @@
 package cz.trigon.bicepsrendererapi.game;
 
 import android.content.Context;
+import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.GLU;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -18,13 +21,15 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
 
     public static final String LDTAG = "TBR-Debug";
 
+    public static final int STATIC_WIDTH = 1280;
+
     private Game game;
     private InputManager input;
     private ContentManager content;
 
-    protected int tps = 20, magicConstant = 1000000000; //TODO this should be changeable
+    protected int tps = 64; //TODO this should be changeable
     protected double tickTime = 1d / tps;
-    protected double tickTimeSec = this.tickTime * this.magicConstant;
+    protected double tickTimeSec = this.tickTime * 1000000000;
     protected long time, lastTime, lastInfo;
     protected int fps, ticks, currentFps;
 
@@ -92,11 +97,17 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
             this.lastTime += this.tickTimeSec;
         }
 
-        if (this.time - lastInfo >= this.magicConstant) {
-            this.lastInfo += this.magicConstant;
+        if (this.time - lastInfo >= 1000000000) {
+            this.lastInfo += 1000000000;
             this.fps = this.currentFps;
             this.currentFps = 0;
         }
+
+        int glError;
+        while ((glError = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
+            Log.e(Surface.LDTAG,  "GL error: " + GLU.gluErrorString(glError));
+        }
+
     }
 
     public int getFps() {
