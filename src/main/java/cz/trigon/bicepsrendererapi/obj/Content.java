@@ -1,6 +1,8 @@
 package cz.trigon.bicepsrendererapi.obj;
 
 
+import android.content.res.AssetFileDescriptor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -62,6 +64,11 @@ public class Content implements  IContentManager {
     @Override
     public InputStream openStream(String path) throws IOException {
         return this.c.openStream(path);
+    }
+
+    @Override
+    public AssetFileDescriptor getDescriptor(String path) throws IOException {
+        return this.c.getDescriptor(path);
     }
 
     @Override

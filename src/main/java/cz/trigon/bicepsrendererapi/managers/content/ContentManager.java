@@ -1,5 +1,6 @@
 package cz.trigon.bicepsrendererapi.managers.content;
 
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.util.Log;
 
@@ -154,6 +155,14 @@ public class ContentManager implements IContentManager {
 
     public InputStream openStream(String path) throws IOException {
         return this.openStream(path, AssetManager.ACCESS_STREAMING);
+    }
+
+    @Override
+    public AssetFileDescriptor getDescriptor(String path) throws IOException {
+        if(!this.pathMappings.containsKey(path))
+            return null;
+
+        return this.asset.openFd(path.substring(1));
     }
 
     public String combine(String... parts) {

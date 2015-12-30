@@ -1,5 +1,7 @@
 package cz.trigon.bicepsrendererapi.managers.interfaces;
 
+import android.content.res.AssetFileDescriptor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -24,6 +26,8 @@ public interface IContentManager {
     InputStream openStream(String path, int mode) throws IOException;
 
     InputStream openStream(String path) throws IOException;
+
+    AssetFileDescriptor getDescriptor(String path) throws IOException;
 
     ContentPreloader getPreloader();
 }

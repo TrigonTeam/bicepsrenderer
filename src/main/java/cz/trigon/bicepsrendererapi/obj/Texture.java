@@ -26,10 +26,6 @@ public class Texture implements ILoadable, ILockable, ITexture {
     public Texture() {
     }
 
-    public Texture(String contentPath) throws IOException {
-        this.load(Texture.surface.getContent(), contentPath);
-    }
-
     @Override
     public void load(ContentManager content, String path) throws IOException {
         if (this.bitmap == null) {

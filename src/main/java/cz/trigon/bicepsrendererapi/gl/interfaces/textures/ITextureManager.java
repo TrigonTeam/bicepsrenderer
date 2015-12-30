@@ -1,5 +1,7 @@
 package cz.trigon.bicepsrendererapi.gl.interfaces.textures;
 
+import android.graphics.Bitmap;
+
 import java.util.Map;
 
 import cz.trigon.bicepsrendererapi.gl.Settings;
@@ -12,15 +14,10 @@ public interface ITextureManager {
 
     ITexture getTexture(int spritesheetId, int id);
 
-    Map<Integer, ? extends ITexture> getSpritesheet(int spritesheetId);
+    ISpritesheet getSpritesheet(int spritesheetId);
 
-    /**
-     * Loads one texture file
-     *
-     * @param id   ID of loaded texture
-     * @param contentPath Name of texture in used content manager
-     */
-    void loadTexture(int id, String contentPath);
+    // ID 0 = default spritesheet
+    void loadTexture(int id, Bitmap bitmap);
 
     /**
      * Loads spritesheet from one file (images numbered by x-position)
