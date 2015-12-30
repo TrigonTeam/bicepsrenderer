@@ -31,19 +31,36 @@ public class ShaderManager implements IShaderManager {
 
     @Override
     public void loadShader(String name, String vertex, String fragment) {
-        int progId = 0, vertId = 0, fragId = 0; // Init with safe values
+        int progId, vertId, fragId;
 
         ShaderFile vert = readShader(vertex);
         ShaderFile frag = readShader(fragment);
 
-        vertId = compileShader(vertex, GLES20.GL_VERTEX_SHADER);
-        fragId = compileShader(fragment, GLES20.GL_FRAGMENT_SHADER);
+        vertId = compileShader(vert, GLES20.GL_VERTEX_SHADER);
 
-        progId = attachLinkValidateShaders(vertId, fragId);
+        if (vertId == 0) {
+            ShaderManager.logLoading(name, false);
+            return;
+        }
+
+        fragId = compileShader(frag, GLES20.GL_FRAGMENT_SHADER);
+
+        if (fragId == 0) {
+            GLES20.glDeleteProgram(vertId);
+            ShaderManager.logLoading(name, false);
+            return;
+        }
+
+        progId = attachShaders(vertId, fragId);
 
         // Delete the vert/frag shaders
-        GLES20.glDeleteProgram(vertId);
-        GLES20.glDeleteProgram(fragId);
+        GLES20.glDeleteShader(vertId);
+        GLES20.glDeleteShader(fragId);
+
+        if (progId == 0) {
+            ShaderManager.logLoading(name, true);
+            return;
+        }
 
         // Get maps of all the uniforms/attributes
         Map<String, Integer> uniforms = new HashMap<>();
@@ -67,6 +84,8 @@ public class ShaderManager implements IShaderManager {
         ShaderVariables variables = new ShaderVariables(uniforms, attributes);
         Shader shader = new Shader(this, name, progId, variables);
         this.shaders.put(name, shader);
+
+        ShaderManager.logLoading(name, true);
     }
 
     @Override
@@ -160,13 +179,15 @@ public class ShaderManager implements IShaderManager {
         return sf;
     }
 
-    private int compileShader(String shader, int type) {
+    private int compileShader(ShaderFile shader, int type) {
         int id = 0;
         try {
             id = GLES20.glCreateShader(type);
             if (id == 0) return 0; // If type/ogl gets fucked up
 
-            GLES20.glShaderSource(id, shader);
+            //System.out.println(shader);
+
+            GLES20.glShaderSource(id, shader.getCode());
             GLES20.glCompileShader(id);
 
             final int[] compileStatus = new int[1];
@@ -185,7 +206,7 @@ public class ShaderManager implements IShaderManager {
         }
     }
 
-    private int attachLinkValidateShaders(int vert, int frag) {
+    private int attachShaders(int vert, int frag) {
         int prog = GLES20.glCreateProgram();
 
         try {
@@ -217,5 +238,13 @@ public class ShaderManager implements IShaderManager {
         }
 
         return prog;
+    }
+
+    public static void logLoading(String name, boolean status) {
+        if (status) {
+            Log.i(Surface.LDTAG, "Loaded shader \"" + name + "\"");
+        } else {
+            Log.e(Surface.LDTAG, "Failed to load shader \"" + name + "\"");
+        }
     }
 }
