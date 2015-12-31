@@ -10,10 +10,12 @@ import android.view.MotionEvent;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import cz.trigon.bicepsrendererapi.managers.content.ContentManager;
 import cz.trigon.bicepsrendererapi.managers.InputManager;
+import cz.trigon.bicepsrendererapi.managers.SoundManager;
+import cz.trigon.bicepsrendererapi.managers.content.ContentManager;
 import cz.trigon.bicepsrendererapi.obj.Content;
 import cz.trigon.bicepsrendererapi.obj.Input;
+import cz.trigon.bicepsrendererapi.obj.SoundEffect;
 import cz.trigon.bicepsrendererapi.obj.Spritesheet;
 import cz.trigon.bicepsrendererapi.obj.Texture;
 
@@ -26,8 +28,9 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     private Game game;
     private InputManager input;
     private ContentManager content;
+    private SoundManager sound;
 
-    protected int tps = 64; //TODO this should be changeable
+    protected int tps = 60; //TODO this should be changeable
     protected double tickTime = 1d / tps;
     protected double tickTimeSec = this.tickTime * 1000000000;
     protected long time, lastTime, lastInfo;
@@ -38,6 +41,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
 
         this.input = new InputManager(this);
         this.content = new ContentManager(context.getAssets());
+        this.sound = new SoundManager();
         this.bindWrappers();
 
         this.setEGLContextClientVersion(2);
@@ -55,6 +59,11 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
         Texture.init(this);
         Spritesheet.init(this);
         Input.init(this);
+        SoundEffect.init(this);
+    }
+
+    public SoundManager getSound() {
+        return this.sound;
     }
 
     public InputManager getInput() {
@@ -124,7 +133,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     }
 
     private void tick() {
-        this.game.tick();
+        this.game.tick(this.ticks);
     }
 
     @Override

@@ -11,8 +11,13 @@ public abstract class Game {
         this.context = surface.getContext();
     }
 
+    public Surface getSurface() {
+        return this.surface;
+    }
+
     public abstract void setup();
-    public abstract void tick();
+
+    public abstract void tick(int ticks);
     public abstract void renderTick(float ptt);
     public abstract void surfaceChanged(int w, int h);
 }

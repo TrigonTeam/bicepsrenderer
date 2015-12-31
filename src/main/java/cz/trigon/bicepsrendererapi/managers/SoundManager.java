@@ -1,6 +1,7 @@
 package cz.trigon.bicepsrendererapi.managers;
 
 import android.content.res.AssetFileDescriptor;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.Log;
 
@@ -11,12 +12,12 @@ import java.util.Map;
 import cz.trigon.bicepsrendererapi.game.Surface;
 import cz.trigon.bicepsrendererapi.managers.interfaces.ISoundManager;
 
-public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListener {
+public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
     private Map<Integer, AssetFileDescriptor> music, sounds;
     private Map<Integer, MediaPlayer> soundsPlaying;
-    private int musicPlaying;
-    private int musicCounter, soundCounter;
+    private int musicPlaying = -1;
+    private int musicCounter, soundCounter, playCounter;
     private MediaPlayer musicPlayer;
     private boolean prepared;
 
@@ -26,6 +27,8 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
         this.soundsPlaying = new HashMap<>();
         this.musicPlayer = new MediaPlayer();
         this.musicPlayer.setOnPreparedListener(this);
+        this.musicPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        this.musicPlayer.setOnCompletionListener(this);
     }
 
     @Override
@@ -89,42 +92,57 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
     }
 
     @Override
-    public void playSound(int id) {
+    public int playSound(int id, float volume) {
         AssetFileDescriptor a = this.sounds.get(id);
         if(a == null)
-            return;
+            return -1;
 
         MediaPlayer m = new MediaPlayer();
         try {
             m.setDataSource(a.getFileDescriptor(), a.getStartOffset(), a.getLength());
             m.prepare();
+            m.setVolume(volume, volume);
+            m.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+            this.soundsPlaying.put(++this.playCounter, m);
         } catch (IOException e) {
             Log.e(Surface.LDTAG, "Couldn't play sound ID " + id, e);
         }
 
         m.start();
+        return this.playCounter;
     }
 
     @Override
-    public void stopSound(int id) {
-        MediaPlayer m = this.soundsPlaying.get(id);
+    public int playSound(int id) {
+        return this.playSound(id, 1f);
+    }
+
+    @Override
+    public void stopSound(int playId) {
+        MediaPlayer m = this.soundsPlaying.get(playId);
         if(m == null)
             return;
 
         m.stop();
-        this.soundsPlaying.remove(id);
+        this.soundsPlaying.remove(playId);
     }
 
     public MediaPlayer getMusicPlayer() {
         return this.musicPlayer;
     }
 
-    public MediaPlayer getSoundPlayer(int id) {
-        return this.soundsPlaying.get(id);
+    public MediaPlayer getSoundPlayer(int playId) {
+        return this.soundsPlaying.get(playId);
     }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
         mp.start();
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        this.musicPlaying = -1;
     }
 }
