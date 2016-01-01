@@ -18,8 +18,12 @@ public class Vector2 {
         this.y = y;
 
         this.hash = 23;
-        this.hash *= 31 + ((int) (this.x * 100) * 3);
-        this.hash *= 31 + ((int) (this.y * 100) * 7);
+        this.hash *= 31 + Float.floatToRawIntBits(x);
+        this.hash *= 31 + Float.floatToRawIntBits(y);
+    }
+
+    public Vector2(float[] values) {
+        this(values[0], values[1]);
     }
 
     public float getDistance(Vector2 other) {

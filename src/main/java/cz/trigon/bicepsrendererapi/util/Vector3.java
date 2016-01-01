@@ -20,9 +20,13 @@ public class Vector3 {
         this.z = z;
 
         this.hash = 23;
-        this.hash *= 31 + ((int) (this.x * 100) * 3);
-        this.hash *= 31 + ((int) (this.y * 100) * 7);
-        this.hash *= 31 + ((int) (this.z * 100) * 5);
+        this.hash *= 31 + Float.floatToRawIntBits(x);
+        this.hash *= 31 + Float.floatToRawIntBits(y);
+        this.hash *= 31 + Float.floatToRawIntBits(z);
+    }
+
+    public Vector3(float[] values) {
+        this(values[0], values[1], values[2]);
     }
 
     public float getDistance(Vector3 other) {
