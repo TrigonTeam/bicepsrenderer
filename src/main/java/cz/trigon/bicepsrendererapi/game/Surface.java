@@ -5,14 +5,13 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.util.Log;
-import android.view.MotionEvent;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import cz.trigon.bicepsrendererapi.managers.InputManager;
 import cz.trigon.bicepsrendererapi.managers.SoundManager;
 import cz.trigon.bicepsrendererapi.managers.content.ContentManager;
+import cz.trigon.bicepsrendererapi.managers.input.InputManager;
 import cz.trigon.bicepsrendererapi.obj.Content;
 import cz.trigon.bicepsrendererapi.obj.Input;
 import cz.trigon.bicepsrendererapi.obj.Music;
@@ -137,31 +136,6 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     private void tick() {
         this.game.tick(this.ticks);
     }
-
-    @Override
-    public boolean onTouchEvent(final MotionEvent e) {
-        this.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                input.onTouch(e);
-            }
-        });
-
-        return true;
-    }
-
-    @Override
-    public boolean onTrackballEvent(final MotionEvent e) {
-        this.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                input.onBall(e);
-            }
-        });
-
-        return true;
-    }
-
 
 
 }
