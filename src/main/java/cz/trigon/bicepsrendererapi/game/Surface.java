@@ -15,6 +15,7 @@ import cz.trigon.bicepsrendererapi.managers.SoundManager;
 import cz.trigon.bicepsrendererapi.managers.content.ContentManager;
 import cz.trigon.bicepsrendererapi.obj.Content;
 import cz.trigon.bicepsrendererapi.obj.Input;
+import cz.trigon.bicepsrendererapi.obj.Music;
 import cz.trigon.bicepsrendererapi.obj.SoundEffect;
 import cz.trigon.bicepsrendererapi.obj.Spritesheet;
 import cz.trigon.bicepsrendererapi.obj.Texture;
@@ -60,6 +61,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
         Spritesheet.init(this);
         Input.init(this);
         SoundEffect.init(this);
+        Music.init(this);
     }
 
     public SoundManager getSound() {

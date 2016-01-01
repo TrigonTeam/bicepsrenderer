@@ -1,5 +1,6 @@
 package cz.trigon.bicepsrendererapi.managers;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
@@ -29,22 +30,28 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
     private SoundPool soundPool;
     private final Object lock = new Object();
 
+    class LollipopSoundPoolBuilder {
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+        public SoundPool createSoundPoolBuilder() {
+            return new SoundPool.Builder().setMaxStreams(16).setAudioAttributes(
+                    new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()).build();
+        }
+    }
+
     public SoundManager(Context context) {
         this.music = new HashMap<>();
         this.sounds = new HashMap<>();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            this.soundPool = new SoundPool.Builder().setMaxStreams(16).setAudioAttributes(
-                    new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()).build();
-        } else {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            this.soundPool = new LollipopSoundPoolBuilder().createSoundPoolBuilder();
+        else
             this.soundPool = new SoundPool(16, AudioManager.STREAM_MUSIC, 100);
-        }
     }
 
     @Override
     public int addMusic(AssetFileDescriptor fd) {
-        this.music.put(this.musicCounter++, fd);
+        this.music.put(++this.musicCounter, fd);
         return this.musicCounter;
     }
 
@@ -94,6 +101,7 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
         if (this.musicPlayer != null) {
             this.musicPlayer.stop();
             this.musicPlayer = null;
+            this.musicPlaying = -1;
         }
     }
 
@@ -127,6 +135,10 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
     @Override
     public void stopSound(int streamId) {
         this.soundPool.stop(streamId);
+    }
+
+    public MediaPlayer getPlayer() {
+        return this.musicPlayer;
     }
 
     @Override
