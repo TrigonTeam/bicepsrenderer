@@ -4,6 +4,7 @@ public class Vector3 {
     protected float x;
     protected float y;
     protected float z;
+    private int hash;
 
     public Vector3() {
         this(0, 0, 0);
@@ -17,17 +18,34 @@ public class Vector3 {
         this.x = x;
         this.y = y;
         this.z = z;
+
+        this.hash = 23;
+        this.hash *= 31 + ((int) (this.x * 100) * 3);
+        this.hash *= 31 + ((int) (this.y * 100) * 7);
+        this.hash *= 31 + ((int) (this.z * 100) * 5);
     }
 
     public float getDistance(Vector3 other) {
         if (other.equals(this))
             return 0;
 
-        if (other.x() == this.x)
+        if (other.x == this.x && other.y == this.y)
+            return Math.abs(other.z - this.z);
+
+        if (other.x == this.x && other.z == this.z)
             return Math.abs(other.y - this.y);
 
-        if (other.y() == this.y)
+        if (other.y == this.y && other.z == this.z)
             return Math.abs(other.x - this.x);
+
+        if (other.x == this.x)
+            return (float) Math.sqrt(Math.pow(other.z - this.z, 2) + Math.pow(this.y - other.y, 2));
+
+        if (other.y == this.y)
+            return (float) Math.sqrt(Math.pow(other.x - this.x, 2) + Math.pow(this.z - other.z, 2));
+
+        if (other.z == this.z)
+            return (float) Math.sqrt(Math.pow(other.x - this.x, 2) + Math.pow(this.y - other.y, 2));
 
         return (float) Math.sqrt(Math.pow(other.x - this.x, 2) + Math.pow(this.y - other.y, 2)
                 + Math.pow(other.z - this.z, 2));
@@ -57,7 +75,7 @@ public class Vector3 {
 
     @Override
     public int hashCode() {
-        return (Float.valueOf(x).hashCode() ^ Double.valueOf(y).hashCode());
+        return this.hash;
     }
 
     @Override
