@@ -25,7 +25,7 @@ public class Music implements ILoadable {
 
     public void play(float volume) {
         this.sound.playMusic(this.musicId);
-        this.sound.getPlayer().setVolume(volume, volume);
+        this.sound.setVolume(volume);
     }
 
     public void play() {

@@ -17,7 +17,7 @@ import java.util.Map;
 import cz.trigon.bicepsrendererapi.game.Surface;
 import cz.trigon.bicepsrendererapi.managers.interfaces.ISoundManager;
 
-public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListener {
+public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListener, AudioManager.OnAudioFocusChangeListener {
 
     private Map<Integer, Integer> sounds;
     private Map<Integer, AssetFileDescriptor> music;
@@ -25,6 +25,8 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
     private MediaPlayer musicPlayer;
     private int musicPlaying = -1;
     private int musicCounter, soundCounter;
+    private int wasPlaying;
+    private float wasPlayingVolume;
 
     private boolean loadingMusic;
     private SoundPool soundPool;
@@ -47,6 +49,41 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
             this.soundPool = new LollipopSoundPoolBuilder().createSoundPoolBuilder();
         else
             this.soundPool = new SoundPool(16, AudioManager.STREAM_MUSIC, 100);
+
+        AudioManager m = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        m.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        switch (focusChange) {
+            case AudioManager.AUDIOFOCUS_GAIN:
+                if (this.wasPlaying != -1) {
+                    this.playMusic(this.wasPlaying);
+                    this.wasPlaying = -1;
+                } else if (this.musicPlaying != -1) {
+                    this.resumeMusic();
+                }
+
+                this.musicPlayer.setVolume(this.wasPlayingVolume, this.wasPlayingVolume);
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS:
+                if (this.musicPlaying != -1) {
+                    this.wasPlaying = this.musicPlaying;
+                    this.stopMusic();
+                }
+
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                this.pauseMusic();
+
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                if (this.musicPlaying != -1)
+                    this.musicPlayer.setVolume(0.1f, 0.1f);
+
+                break;
+        }
     }
 
     @Override
@@ -100,6 +137,7 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
     public void stopMusic() {
         if (this.musicPlayer != null) {
             this.musicPlayer.stop();
+            this.musicPlayer.release();
             this.musicPlayer = null;
             this.musicPlaying = -1;
         }
@@ -135,6 +173,11 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
     @Override
     public void stopSound(int streamId) {
         this.soundPool.stop(streamId);
+    }
+
+    public void setVolume(float volume) {
+        this.wasPlayingVolume = volume;
+        this.musicPlayer.setVolume(this.wasPlayingVolume, this.wasPlayingVolume);
     }
 
     public MediaPlayer getPlayer() {
