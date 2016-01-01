@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.view.MotionEvent;
 
 import cz.trigon.bicepsrendererapi.game.Surface;
 import cz.trigon.bicepsrendererapi.managers.interfaces.IInputManager;
@@ -14,15 +15,25 @@ import cz.trigon.bicepsrendererapi.util.Vector3;
 
 public class InputManager implements IInputManager, SensorEventListener {
 
+    public static final int MAX_TOUCHES = 16;
+
     private Surface surface;
     private SensorManager sensor;
     private boolean gyro, accel, multi, compass, light, prox;
     private Vector3 gyroV, accelV, compassV;
     private float lightV, proxV;
 
+    private float[] touchX, touchY;
+
+    // These will be sent to hell one day
+    private float xtouchX, xtouchY, xlastTouchX, xlastTouchY;
+    private boolean xisDown;
+
     public InputManager(Surface c) {
         this.surface = c;
         this.sensor = (SensorManager) c.getContext().getSystemService(Context.SENSOR_SERVICE);
+        this.touchX = new float[InputManager.MAX_TOUCHES];
+        this.touchY = new float[InputManager.MAX_TOUCHES];
         this.checkSupported();
     }
 
@@ -51,6 +62,32 @@ public class InputManager implements IInputManager, SensorEventListener {
 
     public void unregisterListeners() {
         this.sensor.unregisterListener(this);
+    }
+
+    public void tick() {
+        this.xtouchX = this.xlastTouchX;
+        this.xtouchY = this.xlastTouchY;
+    }
+
+    public boolean onTouchEvent(MotionEvent e) {
+        switch (e.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                this.xlastTouchX = e.getX(0) * this.surface.getCanvasRatio();
+                this.xlastTouchY = e.getY(0) * this.surface.getCanvasRatio();
+                this.xisDown = true;
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                this.xlastTouchX = e.getX(0) * this.surface.getCanvasRatio();
+                this.xlastTouchY = e.getY(0) * this.surface.getCanvasRatio();
+                break;
+
+            case MotionEvent.ACTION_UP:
+                this.xisDown = false;
+                break;
+        }
+
+        return true;
     }
 
     @Override
@@ -85,38 +122,34 @@ public class InputManager implements IInputManager, SensorEventListener {
 
     @Override
     public boolean isTouched() {
-        return false;
+        return this.xisDown;
     }
 
     @Override
     public float getTouchX() {
-        return 0;
+        return this.xtouchX;
     }
 
     @Override
     public float getTouchY() {
-        return 0;
+        return this.xtouchY;
     }
 
-    @Override
-    public float getDeltaX() {
-        return 0;
+    public float getLatestTouchX() {
+        return this.xlastTouchX;
     }
 
-    @Override
-    public float getDeltaY() {
-        return 0;
+    public float getLatestTouchY() {
+        return this.xlastTouchY;
     }
 
     @Override
     public Vector2 getTouch() {
-        return null;
+        return new Vector2(this.xtouchX, this.xtouchY);
     }
 
-    @Override
-    public Vector2 getDelta() {
-        return null;
-    }
+
+    // TODO Multitouch
 
     @Override
     public float[] getTouchesX() {
@@ -129,29 +162,16 @@ public class InputManager implements IInputManager, SensorEventListener {
     }
 
     @Override
-    public float[] getDeltasX() {
-        return new float[0];
-    }
-
-    @Override
-    public float[] getDeltasY() {
-        return new float[0];
-    }
-
-    @Override
     public Vector2[] getTouches() {
         return new Vector2[0];
     }
 
     @Override
-    public Vector2[] getDeltas() {
-        return new Vector2[0];
+    public int getTouchCount() {
+        return this.xisDown ? 1 : 0;
     }
 
-    @Override
-    public int getTouchCount() {
-        return 0;
-    }
+    // END
 
     @Override
     public Vector3 getAcceleration() {
@@ -177,7 +197,6 @@ public class InputManager implements IInputManager, SensorEventListener {
     public float getLightLevel() {
         return this.lightV;
     }
-
 
     @Override
     public void onSensorChanged(SensorEvent event) {

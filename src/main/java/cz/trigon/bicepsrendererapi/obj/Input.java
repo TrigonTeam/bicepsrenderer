@@ -36,24 +36,10 @@ public class Input implements IInputManager {
     }
 
     @Override
-    public float getDeltaX() {
-        return this.input.getDeltaX();
-    }
-
-    @Override
-    public float getDeltaY() {
-        return this.input.getDeltaY();
-    }
-
-    @Override
     public Vector2 getTouch() {
         return this.input.getTouch();
     }
 
-    @Override
-    public Vector2 getDelta() {
-        return this.input.getDelta();
-    }
 
     @Override
     public float[] getTouchesX() {
@@ -66,23 +52,8 @@ public class Input implements IInputManager {
     }
 
     @Override
-    public float[] getDeltasX() {
-        return this.input.getDeltasX();
-    }
-
-    @Override
-    public float[] getDeltasY() {
-        return this.input.getDeltasY();
-    }
-
-    @Override
     public Vector2[] getTouches() {
         return this.input.getTouches();
-    }
-
-    @Override
-    public Vector2[] getDeltas() {
-        return this.input.getDeltas();
     }
 
     @Override

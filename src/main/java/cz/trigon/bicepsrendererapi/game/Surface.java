@@ -5,6 +5,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.util.Log;
+import android.view.MotionEvent;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -37,6 +38,8 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     protected int fps, ticks, currentFps;
 
     private boolean wasMusicPlaying;
+    private int canvasHeight;
+    private float canvasRatio;
 
     public Surface(Context context) {
         super(context);
@@ -47,6 +50,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
         this.input.registerListeners();
 
         this.bindWrappers();
+
 
         this.setEGLContextClientVersion(2);
         this.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
@@ -106,6 +110,11 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     }
 
     @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        return this.input.onTouchEvent(e);
+    }
+
+    @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         this.time = System.nanoTime();
         this.lastTime = time;
@@ -115,6 +124,9 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
+        this.canvasRatio = Surface.STATIC_WIDTH / width;
+        this.canvasHeight = (int) (this.canvasRatio * height);
+
         this.game.surfaceChanged(width, height);
     }
 
@@ -127,6 +139,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
 
         this.time = System.nanoTime();
         while(time - lastTime >= this.tickTimeSec) {
+            this.input.tick();
             this.tick();
             this.ticks++;
             this.lastTime += this.tickTimeSec;
@@ -151,6 +164,18 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
 
     public int getTicks() {
         return this.ticks;
+    }
+
+    public int getCanvasWidth() {
+        return Surface.STATIC_WIDTH;
+    }
+
+    public int getCanvasHeight() {
+        return this.canvasHeight;
+    }
+
+    public float getCanvasRatio() {
+        return this.canvasRatio;
     }
 
     // Maybe we should check if game != null here

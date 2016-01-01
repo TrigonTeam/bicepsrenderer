@@ -10,25 +10,13 @@ public interface IInputManager {
 
     float getTouchY();
 
-    float getDeltaX();
-
-    float getDeltaY();
-
     Vector2 getTouch();
-
-    Vector2 getDelta();
 
     float[] getTouchesX();
 
     float[] getTouchesY();
 
-    float[] getDeltasX();
-
-    float[] getDeltasY();
-
     Vector2[] getTouches();
-
-    Vector2[] getDeltas();
 
     int getTouchCount();
 
