@@ -42,17 +42,13 @@ public interface IInputManager {
 
     float getLightLevel();
 
-    void performHapticFeedback(float force, int time);
-
     boolean isGyroSupported();
 
     boolean isAccelSupported();
 
     boolean isMultiTouchSupported();
 
-    boolean isCompassSupported();
-
-    boolean isHapticSupported();
+    boolean isMagneticSupported();
 
     boolean isLightSupported();
 

@@ -36,12 +36,16 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     protected long time, lastTime, lastInfo;
     protected int fps, ticks, currentFps;
 
+    private boolean wasMusicPlaying;
+
     public Surface(Context context) {
         super(context);
 
         this.input = new InputManager(this);
         this.content = new ContentManager(context.getAssets());
         this.sound = new SoundManager(context);
+        this.input.registerListeners();
+
         this.bindWrappers();
 
         this.setEGLContextClientVersion(2);
@@ -52,6 +56,27 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     public Surface(Context context, Game game) {
         this(context);
         this.setGame(game);
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.input.registerListeners();
+
+        if (this.sound.getPlayingMusic() > -1 && this.sound.getPlayer().isPlaying()) {
+            this.sound.pauseMusic();
+            this.wasMusicPlaying = true;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.input.unregisterListeners();
+
+        if (this.wasMusicPlaying)
+            this.sound.resumeMusic();
     }
 
     public void bindWrappers() {

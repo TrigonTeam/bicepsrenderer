@@ -1,16 +1,86 @@
 package cz.trigon.bicepsrendererapi.managers.input;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+
 import cz.trigon.bicepsrendererapi.game.Surface;
 import cz.trigon.bicepsrendererapi.managers.interfaces.IInputManager;
 import cz.trigon.bicepsrendererapi.util.Vector2;
 import cz.trigon.bicepsrendererapi.util.Vector3;
 
-public class InputManager implements IInputManager {
-    private Surface context;
+public class InputManager implements IInputManager, SensorEventListener {
+
+    private Surface surface;
+    private SensorManager sensor;
+    private boolean gyro, accel, multi, compass, light, prox;
+    private Vector3 gyroV, accelV, compassV;
+    private float lightV, proxV;
 
     public InputManager(Surface c) {
-        this.context = c;
+        this.surface = c;
+        this.sensor = (SensorManager) c.getContext().getSystemService(Context.SENSOR_SERVICE);
+        this.checkSupported();
+    }
 
+    private void checkSupported() {
+        this.gyro = this.sensor.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null;
+        this.accel = this.sensor.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null;
+        this.compass = this.sensor.getDefaultSensor(Sensor.TYPE_GRAVITY) != null;
+        this.light = this.sensor.getDefaultSensor(Sensor.TYPE_LIGHT) != null;
+        this.prox = this.sensor.getDefaultSensor(Sensor.TYPE_PROXIMITY) != null;
+        this.multi = this.surface.getContext().getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH);
+    }
+
+    public void registerListeners() {
+        this.sensor.registerListener(this, this.sensor.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_GAME);
+        this.sensor.registerListener(this, this.sensor.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
+                SensorManager.SENSOR_DELAY_GAME);
+        this.sensor.registerListener(this, this.sensor.getDefaultSensor(Sensor.TYPE_LIGHT),
+                SensorManager.SENSOR_DELAY_GAME);
+        this.sensor.registerListener(this, this.sensor.getDefaultSensor(Sensor.TYPE_PROXIMITY),
+                SensorManager.SENSOR_DELAY_GAME);
+        this.sensor.registerListener(this, this.sensor.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+                SensorManager.SENSOR_DELAY_GAME);
+    }
+
+    public void unregisterListeners() {
+        this.sensor.unregisterListener(this);
+    }
+
+    @Override
+    public boolean isGyroSupported() {
+        return this.gyro;
+    }
+
+    @Override
+    public boolean isAccelSupported() {
+        return this.accel;
+    }
+
+    @Override
+    public boolean isMultiTouchSupported() {
+        return this.multi;
+    }
+
+    @Override
+    public boolean isMagneticSupported() {
+        return this.compass;
+    }
+
+    @Override
+    public boolean isLightSupported() {
+        return this.light;
+    }
+
+    @Override
+    public boolean isProximitySupported() {
+        return this.prox;
     }
 
     @Override
@@ -85,66 +155,55 @@ public class InputManager implements IInputManager {
 
     @Override
     public Vector3 getAcceleration() {
-        return null;
+        return this.accelV;
     }
 
     @Override
     public Vector3 getRotation() {
-        return null;
+        return this.gyroV;
     }
 
     @Override
     public Vector3 getMagneticBias() {
-        return null;
+        return this.compassV;
     }
 
     @Override
     public float getProximity() {
-        return 0;
+        return this.proxV;
     }
 
     @Override
     public float getLightLevel() {
-        return 0;
+        return this.lightV;
+    }
+
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        switch (event.sensor.getType()) {
+            case Sensor.TYPE_ACCELEROMETER:
+                this.accelV = new Vector3(event.values);
+                break;
+            case Sensor.TYPE_GYROSCOPE:
+                this.gyroV = new Vector3(event.values);
+                break;
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                this.compassV = event.values.length > 3 ?
+                        new Vector3(event.values[3], event.values[4], event.values[5]) :
+                        new Vector3(event.values);
+                break;
+            case Sensor.TYPE_PROXIMITY:
+                this.proxV = event.values[0];
+                break;
+            case Sensor.TYPE_LIGHT:
+                this.lightV = event.values[0];
+                break;
+        }
     }
 
     @Override
-    public void performHapticFeedback(float force, int time) {
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
-    }
-
-    @Override
-    public boolean isGyroSupported() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccelSupported() {
-        return false;
-    }
-
-    @Override
-    public boolean isMultiTouchSupported() {
-        return false;
-    }
-
-    @Override
-    public boolean isCompassSupported() {
-        return false;
-    }
-
-    @Override
-    public boolean isHapticSupported() {
-        return false;
-    }
-
-    @Override
-    public boolean isLightSupported() {
-        return false;
-    }
-
-    @Override
-    public boolean isProximitySupported() {
-        return false;
     }
 }
