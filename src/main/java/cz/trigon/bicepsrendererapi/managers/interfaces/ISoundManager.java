@@ -12,9 +12,7 @@ public interface ISoundManager {
 
     int addSound(AssetFileDescriptor fd);
 
-    int playSound(int id, float volume);
+    int playSound(int id, float volume, float pitch, boolean loop);
 
-    int playSound(int id);
-
-    void stopSound(int playId);
+    void stopSound(int streamId);
 }

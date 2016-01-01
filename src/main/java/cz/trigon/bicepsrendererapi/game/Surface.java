@@ -41,7 +41,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
 
         this.input = new InputManager(this);
         this.content = new ContentManager(context.getAssets());
-        this.sound = new SoundManager();
+        this.sound = new SoundManager(context);
         this.bindWrappers();
 
         this.setEGLContextClientVersion(2);

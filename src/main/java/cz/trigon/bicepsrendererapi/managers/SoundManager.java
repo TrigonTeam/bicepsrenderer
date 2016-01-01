@@ -1,8 +1,12 @@
 package cz.trigon.bicepsrendererapi.managers;
 
+import android.content.Context;
 import android.content.res.AssetFileDescriptor;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.os.Build;
 import android.util.Log;
 
 import java.io.IOException;
@@ -12,67 +16,72 @@ import java.util.Map;
 import cz.trigon.bicepsrendererapi.game.Surface;
 import cz.trigon.bicepsrendererapi.managers.interfaces.ISoundManager;
 
-public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListener {
 
-    private Map<Integer, AssetFileDescriptor> music, sounds;
-    private Map<Integer, MediaPlayer> soundsPlaying;
-    private int musicPlaying = -1;
-    private int musicCounter, soundCounter, playCounter;
+    private Map<Integer, Integer> sounds;
+    private Map<Integer, AssetFileDescriptor> music;
+
     private MediaPlayer musicPlayer;
-    private boolean prepared;
+    private int musicPlaying = -1;
+    private int musicCounter, soundCounter;
 
-    public SoundManager() {
+    private boolean loadingMusic;
+    private SoundPool soundPool;
+    private final Object lock = new Object();
+
+    public SoundManager(Context context) {
         this.music = new HashMap<>();
         this.sounds = new HashMap<>();
-        this.soundsPlaying = new HashMap<>();
-        this.musicPlayer = new MediaPlayer();
-        this.musicPlayer.setOnPreparedListener(this);
-        this.musicPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        this.musicPlayer.setOnCompletionListener(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.soundPool = new SoundPool.Builder().setMaxStreams(16).setAudioAttributes(
+                    new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()).build();
+        } else {
+            this.soundPool = new SoundPool(16, AudioManager.STREAM_MUSIC, 100);
+        }
     }
 
     @Override
     public int addMusic(AssetFileDescriptor fd) {
-        this.music.put(++this.musicCounter, fd);
+        this.music.put(this.musicCounter++, fd);
         return this.musicCounter;
     }
 
     @Override
     public void resumeMusic() {
-        if(this.prepared && !this.musicPlayer.isPlaying())
+        if (this.musicPlayer != null) {
             this.musicPlayer.start();
+        }
     }
 
     @Override
     public void playMusic(int id) {
-        AssetFileDescriptor a = this.music.get(id);
-        if(a == null)
+        AssetFileDescriptor fd = this.music.get(id);
+        if (fd == null)
             return;
 
-        if(this.musicPlayer.isPlaying())
-            this.musicPlayer.stop();
+        this.stopMusic();
 
+        this.musicPlayer = new MediaPlayer();
         try {
-            this.musicPlayer.setDataSource(a.getFileDescriptor(), a.getStartOffset(), a.getLength());
-        } catch (IOException e) {
-            Log.e(Surface.LDTAG, "Couldn't open music ID " + id, e);
-        }
+            this.musicPlayer.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
 
-        this.musicPlaying = id;
-
-        try {
-            this.musicPlayer.prepare();
-            this.prepared = true;
-            this.musicPlayer.start();
+            synchronized (this.lock) {
+                this.loadingMusic = true;
+                this.musicPlaying = id;
+                this.musicPlayer.prepareAsync();
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(Surface.LDTAG, "Couldn't play music ID " + id, e);
         }
     }
 
     @Override
     public void pauseMusic() {
-        if(this.prepared)
+        if (this.musicPlayer != null) {
             this.musicPlayer.pause();
+        }
     }
 
     @Override
@@ -82,67 +91,49 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
 
     @Override
     public void stopMusic() {
-        this.musicPlayer.reset();
+        if (this.musicPlayer != null) {
+            this.musicPlayer.stop();
+            this.musicPlayer = null;
+        }
     }
 
     @Override
     public int addSound(AssetFileDescriptor fd) {
-        this.sounds.put(++this.soundCounter, fd);
+        int sId = this.soundPool.load(fd, 1);
+        this.sounds.put(++this.soundCounter, sId);
+
+        try {
+            fd.close();
+        } catch (IOException e) {
+            Log.e(Surface.LDTAG, "Error when adding sound", e);
+        }
+
         return this.soundCounter;
     }
 
     @Override
-    public int playSound(int id, float volume) {
-        AssetFileDescriptor a = this.sounds.get(id);
-        if(a == null)
+    public int playSound(int id, float volume, float pitch, boolean loop) {
+        Integer sound = this.sounds.get(id);
+        if (sound == null)
             return -1;
 
-        MediaPlayer m = new MediaPlayer();
-        try {
-            m.setDataSource(a.getFileDescriptor(), a.getStartOffset(), a.getLength());
-            m.prepare();
-            m.setVolume(volume, volume);
-            m.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        int streamId = this.soundPool.play(sound, volume, volume, 1, loop ? -1 : 0, pitch);
+        if (streamId == 0)
+            return -1;
 
-            this.soundsPlaying.put(++this.playCounter, m);
-        } catch (IOException e) {
-            Log.e(Surface.LDTAG, "Couldn't play sound ID " + id, e);
-        }
-
-        m.start();
-        return this.playCounter;
+        return streamId;
     }
 
     @Override
-    public int playSound(int id) {
-        return this.playSound(id, 1f);
-    }
-
-    @Override
-    public void stopSound(int playId) {
-        MediaPlayer m = this.soundsPlaying.get(playId);
-        if(m == null)
-            return;
-
-        m.stop();
-        this.soundsPlaying.remove(playId);
-    }
-
-    public MediaPlayer getMusicPlayer() {
-        return this.musicPlayer;
-    }
-
-    public MediaPlayer getSoundPlayer(int playId) {
-        return this.soundsPlaying.get(playId);
+    public void stopSound(int streamId) {
+        this.soundPool.stop(streamId);
     }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        mp.start();
-    }
-
-    @Override
-    public void onCompletion(MediaPlayer mp) {
-        this.musicPlaying = -1;
+        synchronized (this.lock) {
+            mp.start();
+            this.loadingMusic = false;
+        }
     }
 }
