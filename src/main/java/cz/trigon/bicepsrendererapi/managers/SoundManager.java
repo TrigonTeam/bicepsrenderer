@@ -140,7 +140,8 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
     @Override
     public void stopMusic() {
         if (this.musicPlayer != null) {
-            this.musicPlayer.stop();
+            if(this.musicPlayer.isPlaying())
+                this.musicPlayer.stop();
             this.musicPlayer.release();
             this.musicPlayer = null;
             this.musicPlaying = -1;
@@ -149,8 +150,7 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        this.musicPlaying = -1;
-        mp.release();
+        this.stopMusic();
     }
 
     @Override
