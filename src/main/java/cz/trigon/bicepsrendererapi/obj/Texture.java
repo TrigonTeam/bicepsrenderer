@@ -6,21 +6,18 @@ import android.graphics.BitmapFactory;
 import java.io.IOException;
 
 import cz.trigon.bicepsrendererapi.game.Surface;
-import cz.trigon.bicepsrendererapi.gl.interfaces.ILockable;
-import cz.trigon.bicepsrendererapi.gl.interfaces.ILocker;
 import cz.trigon.bicepsrendererapi.gl.interfaces.textures.ITexture;
 import cz.trigon.bicepsrendererapi.managers.content.ContentManager;
 import cz.trigon.bicepsrendererapi.managers.interfaces.ILoadable;
 import cz.trigon.bicepsrendererapi.util.Vector2;
 
-public class Texture implements ILoadable, ILockable, ITexture {
+public class Texture implements ILoadable, ITexture {
     private static Surface surface;
 
     public static void init(Surface s) {
         Texture.surface = s;
     }
 
-    private ILocker locker;
     private Bitmap bitmap;
 
     public Texture() {
@@ -55,20 +52,6 @@ public class Texture implements ILoadable, ILockable, ITexture {
         return this.bitmap != null;
     }
 
-    @Override
-    public boolean isLocked() {
-        return this.locker != null;
-    }
-
-    @Override
-    public void setLocked(ILocker lockable) {
-        this.locker = lockable;
-    }
-
-    @Override
-    public ILocker getLocked() {
-        return this.locker;
-    }
 
     @Override
     public int getId() {
