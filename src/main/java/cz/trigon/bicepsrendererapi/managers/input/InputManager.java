@@ -24,6 +24,7 @@ public class InputManager implements IInputManager, SensorEventListener {
     private float lightV, proxV;
 
     private float[] touchX, touchY;
+    private MotionEvent lastEvent;
 
     // These will be sent to hell one day
     private float xtouchX, xtouchY, xlastTouchX, xlastTouchY;
@@ -87,7 +88,13 @@ public class InputManager implements IInputManager, SensorEventListener {
                 break;
         }
 
+        this.lastEvent = e;
+
         return true;
+    }
+
+    public MotionEvent getLastEvent() {
+        return this.lastEvent;
     }
 
     @Override

@@ -69,7 +69,7 @@ public class ImmediateRenderer implements IImmediateRenderer {
         this.vm = surface.getVbos();
         this.shader = this.sm.getShader("default");
 
-        Matrix4 mat = Matrix4.makeOrthoMatrix(0, 1080, 1920, 0, -1, 1);
+        Matrix4 mat = Matrix4.makeOrthoMatrix(0, surface.getCanvasHeight(), surface.getCanvasWidth(), 0, -1, 1);
 
         this.shader.bind();
 
@@ -163,7 +163,10 @@ public class ImmediateRenderer implements IImmediateRenderer {
 
     @Override
     public void setPrimitiveMode(PrimitiveMode mode) {
+        if(this.vertices > 0)
+            this.flush();
 
+        this.primitiveMode = mode;
     }
 
     @Override
@@ -198,7 +201,7 @@ public class ImmediateRenderer implements IImmediateRenderer {
 
     @Override
     public void setLineWidth(float width) {
-
+        GLES20.glLineWidth(width);
     }
 
     @Override
