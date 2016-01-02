@@ -6,35 +6,80 @@ import android.opengl.GLES20;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import cz.trigon.bicepsrendererapi.game.Surface;
+import cz.trigon.bicepsrendererapi.gl.bos.Vbo;
+import cz.trigon.bicepsrendererapi.gl.bos.VboManager;
 import cz.trigon.bicepsrendererapi.gl.interfaces.bos.IFbo;
 import cz.trigon.bicepsrendererapi.gl.interfaces.bos.IVbo;
 import cz.trigon.bicepsrendererapi.gl.interfaces.render.IImmediateRenderer;
 import cz.trigon.bicepsrendererapi.gl.interfaces.shaders.IShader;
 import cz.trigon.bicepsrendererapi.gl.interfaces.textures.ITexture;
+import cz.trigon.bicepsrendererapi.gl.matrices.Matrix4;
+import cz.trigon.bicepsrendererapi.gl.shader.Shader;
+import cz.trigon.bicepsrendererapi.gl.shader.ShaderManager;
 
 public class ImmediateRenderer implements IImmediateRenderer {
 
     public static final int BUFFER_SIZE = 1024 * 1024 * 4; // 4MB
 
-    //private IAttributeProvider atrp;
+    private Surface surface;
+
     private ByteBuffer buffer;
     private PrimitiveMode primitiveMode;
 
-    public ImmediateRenderer() {
+    // THIS IS TEMPORARY
+    private ShaderManager sm;
+    private VboManager vm;
+
+    private IShader shader;
+    private IVbo vbo;
+
+    private int vertices = 0;
+
+    public ImmediateRenderer(Surface surface) {
         this.buffer = ByteBuffer.allocateDirect(ImmediateRenderer.BUFFER_SIZE);
         this.buffer.order(ByteOrder.nativeOrder());
+        this.surface = surface;
+        this.primitiveMode = PrimitiveMode.TRIANGLES;
+        this.sm = new ShaderManager(surface);
+        this.sm.loadShader("default", "/default_shader.vsh", "/default_shader.fsh");
+        this.vm = new VboManager();
+        this.shader = this.sm.getShader("default");
+        this.vbo = this.vm.getVbo("default");
+
+        Matrix4 mat = Matrix4.makeOrthoMatrix(0, 1080, 1920, 0, -1, 1);
+
+        this.shader.bind();
+
+        this.shader.setUniformMatrix4f("pMat", mat);
+
+        int attribPos = this.shader.getAttribLocation("vPos");
+        int attribCol = this.shader.getAttribLocation("vColor");
+
+        this.vbo.bind();
+        GLES20.glVertexAttribPointer(attribPos, 2, GLES20.GL_FLOAT, false, 6 * 4, 0);
+        GLES20.glVertexAttribPointer(attribCol, 4, GLES20.GL_FLOAT, false, 6 * 4, 2 * 4);
+
+        GLES20.glEnableVertexAttribArray(attribPos);
+        GLES20.glEnableVertexAttribArray(attribCol);
     }
 
     @Override
     public void flush() {
-            //GLES20.glFlush();
+        GLES20.glFlush();
+        this.buffer.flip();
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, this.vertices * 6 * 4, this.buffer, GLES20.GL_STREAM_DRAW);
 
+        GLES20.glDrawArrays(this.getPrimitiveMode().getGl(), 0, this.vertices);
 
-            this.buffer.flip();
-            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, ImmediateRenderer.BUFFER_SIZE, this.buffer, GLES20.GL_STREAM_DRAW);
-            //this.atrp.onFlush();
-            this.buffer.clear();
+        this.buffer.clear();
+        this.vertices = 0;
+    }
 
+    @Override
+    public void vertex(float x, float y) {
+        this.buffer.putFloat(x).putFloat(y).putFloat(1).putFloat(1).putFloat(1).putFloat(1);
+        this.vertices++;
     }
 
     @Override
