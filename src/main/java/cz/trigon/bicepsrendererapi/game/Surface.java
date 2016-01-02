@@ -67,6 +67,11 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
         this.setGame(game);
     }
 
+    private Runnable fpsCallback;
+
+    public void setFpsCallback(Runnable r) {
+        this.fpsCallback = r;
+    }
 
     @Override
     public void onPause() {
@@ -162,6 +167,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
         if (this.time - lastInfo >= 1000000000) {
             this.lastInfo += 1000000000;
             this.fps = this.currentFps;
+            this.fpsCallback.run();
             this.currentFps = 0;
         }
 
@@ -169,8 +175,6 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
         while ((glError = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
             Log.e(Surface.LDTAG,  "GL error: " + GLU.gluErrorString(glError));
         }
-
-        Log.i(Surface.LDTAG, this.getFps() + "fps");
     }
 
     public int getFps() {
