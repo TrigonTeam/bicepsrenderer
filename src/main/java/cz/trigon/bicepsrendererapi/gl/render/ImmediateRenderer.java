@@ -20,7 +20,7 @@ import static android.opengl.GLES20.glBufferSubData;
 
 public class ImmediateRenderer implements IImmediateRenderer {
 
-    public static final int BUFFER_SIZE = 1024 * 1024 * 8; //4M
+    public static final int BUFFER_SIZE = 1024 * 1024 * 2; // 2MB
     public static final int VERTEX_SIZE_FLOAT = 3;
     public static final int VERTEX_SIZE = VERTEX_SIZE_FLOAT * 4;
 
