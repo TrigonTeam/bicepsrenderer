@@ -21,7 +21,7 @@ import static android.opengl.GLES20.glBufferSubData;
 public class ImmediateRenderer implements IImmediateRenderer {
 
     public static final int BUFFER_SIZE = 1024 * 1024 * 8; //4M
-    public static final int VERTEX_SIZE_FLOAT = 6;
+    public static final int VERTEX_SIZE_FLOAT = 3;
     public static final int VERTEX_SIZE = VERTEX_SIZE_FLOAT * 4;
 
     public static final int MAX_VERTICES = (int) Math.floor(Math.floor(BUFFER_SIZE / VERTEX_SIZE_FLOAT) / 12) * 12;
@@ -48,6 +48,8 @@ public class ImmediateRenderer implements IImmediateRenderer {
     private int arrayPos = 0;
 
     private int vertices = 0;
+
+    private float color = 0;
 
     public ImmediateRenderer(Surface surface) {
         ByteBuffer b = ByteBuffer.allocateDirect(ImmediateRenderer.BUFFER_SIZE*4);
@@ -83,7 +85,7 @@ public class ImmediateRenderer implements IImmediateRenderer {
         GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, BUFFER_SIZE, null, GLES20.GL_STREAM_DRAW);
 
         GLES20.glVertexAttribPointer(attribPos, 2, GLES20.GL_FLOAT, false, VERTEX_SIZE, 0);
-        GLES20.glVertexAttribPointer(attribCol, 4, GLES20.GL_FLOAT, false, VERTEX_SIZE, 2 * 4);
+        GLES20.glVertexAttribPointer(attribCol, 4, GLES20.GL_UNSIGNED_BYTE, true, VERTEX_SIZE, 2 * 4);
 
         GLES20.glEnableVertexAttribArray(attribPos);
         GLES20.glEnableVertexAttribArray(attribCol);
@@ -118,10 +120,7 @@ public class ImmediateRenderer implements IImmediateRenderer {
 
         vertArray[arrayPos++] = x;
         vertArray[arrayPos++] = y;
-        vertArray[arrayPos++] = this.colorRed;
-        vertArray[arrayPos++] = this.colorGreen;
-        vertArray[arrayPos++] = this.colorBlue;
-        vertArray[arrayPos++] = this.colorAlpha;
+        vertArray[arrayPos++] = this.color;
 
         this.vertices++;
 
@@ -131,12 +130,30 @@ public class ImmediateRenderer implements IImmediateRenderer {
     }
 
     @Override
+    public void color(int r, int g, int b, int a) {
+        this.color =  packColor(r, g, b, a);
+    }
+
+    @Override
+    public void color(float color) {
+        this.color = color;
+    }
+
+    public static float packColor(int r, int g, int b, int a) {
+        return Float.intBitsToFloat(((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8)  | ((b & 0xFF) << 0));
+    }
+
+    public static float packColor(int color) {
+        return Float.intBitsToFloat(color);
+    }
+
+    /*@Override
     public void color(float r, float g, float b, float a) {
         this.colorRed = r;
         this.colorGreen = g;
         this.colorBlue = b;
         this.colorAlpha = a;
-    }
+    }*/
 
     @Override
     public void setClearColor(int color) {
