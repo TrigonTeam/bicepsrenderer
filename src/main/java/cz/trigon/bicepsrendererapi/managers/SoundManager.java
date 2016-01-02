@@ -17,7 +17,8 @@ import java.util.Map;
 import cz.trigon.bicepsrendererapi.game.Surface;
 import cz.trigon.bicepsrendererapi.managers.interfaces.ISoundManager;
 
-public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListener, AudioManager.OnAudioFocusChangeListener {
+public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListener,
+        AudioManager.OnAudioFocusChangeListener, MediaPlayer.OnCompletionListener {
 
     private Map<Integer, Integer> sounds;
     private Map<Integer, AssetFileDescriptor> music;
@@ -109,6 +110,7 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
 
         this.musicPlayer = new MediaPlayer();
         this.musicPlayer.setOnPreparedListener(this);
+        this.musicPlayer.setOnCompletionListener(this);
         try {
             this.musicPlayer.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
 
@@ -141,6 +143,20 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
             this.musicPlayer.release();
             this.musicPlayer = null;
             this.musicPlaying = -1;
+        }
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        this.musicPlaying = -1;
+        mp.release();
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        synchronized (this.lock) {
+            mp.start();
+            this.loadingMusic = false;
         }
     }
 
@@ -183,13 +199,5 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
 
     public MediaPlayer getPlayer() {
         return this.musicPlayer;
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-        synchronized (this.lock) {
-            mp.start();
-            this.loadingMusic = false;
-        }
     }
 }
