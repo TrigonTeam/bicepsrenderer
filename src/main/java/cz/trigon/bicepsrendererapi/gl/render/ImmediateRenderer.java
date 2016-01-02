@@ -69,7 +69,7 @@ public class ImmediateRenderer implements IImmediateRenderer {
         this.vm = surface.getVbos();
         this.shader = this.sm.getShader("default");
 
-        Matrix4 mat = Matrix4.makeOrthoMatrix(0, surface.getCanvasHeight(), surface.getCanvasWidth(), 0, -1, 1);
+        Matrix4 mat = Matrix4.makeOrthoMatrix(0, surface.getCanvasWidth(), surface.getCanvasHeight(), 0, -1, 1);
 
         this.shader.bind();
 

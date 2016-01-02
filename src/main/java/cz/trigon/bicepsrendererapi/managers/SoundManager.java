@@ -25,8 +25,8 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
 
     private MediaPlayer musicPlayer;
     private int musicPlaying = -1;
+    private int wasPlaying = -1;
     private int musicCounter, soundCounter;
-    private int wasPlaying;
     private float wasPlayingVolume;
 
     private boolean loadingMusic;

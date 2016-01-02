@@ -26,7 +26,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
 
     public static final String LDTAG = "TBR-Debug";
 
-    public static final int STATIC_WIDTH = 1280;
+    public static final int STATIC_WIDTH = 900;
 
     private Game game;
     private InputManager input;
@@ -143,7 +143,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        this.canvasRatio = Surface.STATIC_WIDTH / width;
+        this.canvasRatio = (float) Surface.STATIC_WIDTH / (float) width;
         this.canvasHeight = (int) (this.canvasRatio * height);
 
         this.game.surfaceChanged(width, height);
