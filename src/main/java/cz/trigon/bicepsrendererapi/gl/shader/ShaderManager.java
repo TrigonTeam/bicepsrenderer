@@ -58,7 +58,7 @@ public class ShaderManager implements IShaderManager {
         GLES20.glDeleteShader(fragId);
 
         if (progId == 0) {
-            ShaderManager.logLoading(name, true);
+            ShaderManager.logLoading(name, false);
             return;
         }
 
@@ -96,7 +96,7 @@ public class ShaderManager implements IShaderManager {
     @Override
     public void bind(IShader toBind) {
         int id = toBind.getId();
-        if (this.current == id) {
+        if (this.current != id) {
             GLES20.glUseProgram(id);
             this.current = id;
         }
