@@ -108,6 +108,7 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
         this.stopMusic();
 
         this.musicPlayer = new MediaPlayer();
+        this.musicPlayer.setOnPreparedListener(this);
         try {
             this.musicPlayer.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
 
