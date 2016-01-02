@@ -29,7 +29,7 @@ public class ImmediateRenderer implements IImmediateRenderer {
     public static final int VERTEX_SIZE_FLOAT = 6;
     public static final int VERTEX_SIZE = VERTEX_SIZE_FLOAT * 4;
 
-    public static final int MAX_VERTICES = 349524;
+    public static final int MAX_VERTICES = (int) Math.floor(Math.floor(BUFFER_SIZE / VERTEX_SIZE_FLOAT) / 12) * 12;
 
     private Surface surface;
 
