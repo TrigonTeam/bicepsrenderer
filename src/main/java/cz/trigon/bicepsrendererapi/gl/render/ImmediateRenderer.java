@@ -6,6 +6,8 @@ import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import cz.trigon.bicepsrendererapi.game.Surface;
 import cz.trigon.bicepsrendererapi.gl.bos.Vbo;
@@ -19,14 +21,21 @@ import cz.trigon.bicepsrendererapi.gl.matrices.Matrix4;
 import cz.trigon.bicepsrendererapi.gl.shader.Shader;
 import cz.trigon.bicepsrendererapi.gl.shader.ShaderManager;
 
+import static android.opengl.GLES20.glBufferSubData;
+
 public class ImmediateRenderer implements IImmediateRenderer {
 
-    public static final int BUFFER_SIZE = 1024 * 1024; // 1MB
-    public static final int MAX_VERTICES = 87372;
+    public static final int BUFFER_SIZE = 1024 * 1024 * 8; //4M
+    public static final int VERTEX_SIZE_FLOAT = 6;
+    public static final int VERTEX_SIZE = VERTEX_SIZE_FLOAT * 4;
+
+    public static final int MAX_VERTICES = 349524;
 
     private Surface surface;
 
-    private ByteBuffer buffer;
+    private FloatBuffer buffer;
+    //private FloatBuffer bufferF;
+    //private IntBuffer bufferI;
 
 
     private PrimitiveMode primitiveMode;
@@ -40,11 +49,21 @@ public class ImmediateRenderer implements IImmediateRenderer {
 
     private float colorRed = 1f, colorGreen = 1f, colorBlue = 1f, colorAlpha = 1f;
 
+    private float[] vertArray;
+    private int arrayPos = 0;
+
     private int vertices = 0;
 
     public ImmediateRenderer(Surface surface) {
-        this.buffer = ByteBuffer.allocateDirect(ImmediateRenderer.BUFFER_SIZE);
-        this.buffer.order(ByteOrder.nativeOrder());
+        ByteBuffer b = ByteBuffer.allocateDirect(ImmediateRenderer.BUFFER_SIZE*4);
+        b.order(ByteOrder.nativeOrder());
+
+        this.buffer = b.asFloatBuffer();
+
+        //this.bufferF = this.buffer.asFloatBuffer();
+        //this.bufferI = this.buffer.asIntBuffer();
+
+        this.vertArray = new float[MAX_VERTICES*VERTEX_SIZE_FLOAT];
 
         this.surface = surface;
         this.primitiveMode = PrimitiveMode.TRIANGLES;
@@ -65,10 +84,10 @@ public class ImmediateRenderer implements IImmediateRenderer {
 
         this.vbo.bind();
 
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, MAX_VERTICES * 3 * 4, null, GLES20.GL_STREAM_DRAW);
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, BUFFER_SIZE, null, GLES20.GL_STREAM_DRAW);
 
-        GLES20.glVertexAttribPointer(attribPos, 2, GLES20.GL_FLOAT, false, 3 * 4, 0);
-        GLES20.glVertexAttribPointer(attribCol, 4, GLES20.GL_UNSIGNED_BYTE, true, 3 * 4, 2 * 4);
+        GLES20.glVertexAttribPointer(attribPos, 2, GLES20.GL_FLOAT, false, VERTEX_SIZE, 0);
+        GLES20.glVertexAttribPointer(attribCol, 4, GLES20.GL_FLOAT, false, VERTEX_SIZE, 2 * 4);
 
         GLES20.glEnableVertexAttribArray(attribPos);
         GLES20.glEnableVertexAttribArray(attribCol);
@@ -77,24 +96,37 @@ public class ImmediateRenderer implements IImmediateRenderer {
     @Override
     public void flush() {
         //GLES20.glFlush();
+
+        //System.out.println("ArrayPos " + this.arrayPos + ", vertices " + this.vertices);
+
+        this.buffer.put(this.vertArray, 0, this.arrayPos);
         this.buffer.flip();
-        //GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, this.vertices * 3 * 4, this.buffer, GLES20.GL_STREAM_DRAW);
 
-        //GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, MAX_VERTICES * 3 * 4, null, GLES20.GL_STREAM_DRAW);
-        GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, 0, this.vertices * 3 * 4, this.buffer);
-
+        glBufferSubData(GLES20.GL_ARRAY_BUFFER, 0, this.buffer.limit()*4, this.buffer);
         GLES20.glDrawArrays(this.getPrimitiveMode().getGl(), 0, this.vertices);
 
         this.buffer.clear();
-        this.vertices = 0;
 
-        Log.i(Surface.LDTAG, "FLUSH!");
+        this.vertices = 0;
+        this.arrayPos = 0;
     }
 
 
     @Override
     public void vertex(float x, float y) {
-        this.buffer.putFloat(x).putFloat(y).put((byte) (colorRed * 255f)).put((byte) (colorGreen * 255f)).put((byte) (colorBlue * 255f)).put((byte) (colorAlpha * 255f));
+        //this.bufferF.put(x).put(y);
+        //this.bufferI.put(Float.floatToRawIntBits(x)).put(Float.floatToRawIntBits(y)).put(0xFFFFFFFF);
+        //this.buffer.putFloat(x).putFloat(y).putInt(0xFFFFFFFF);
+
+        //this.bufferF.put(x).put(y).put(-99999999999999f);
+
+        vertArray[arrayPos++] = x;
+        vertArray[arrayPos++] = y;
+        vertArray[arrayPos++] = this.colorRed;
+        vertArray[arrayPos++] = this.colorGreen;
+        vertArray[arrayPos++] = this.colorBlue;
+        vertArray[arrayPos++] = this.colorAlpha;
+
         this.vertices++;
 
         if (vertices == ImmediateRenderer.MAX_VERTICES) {
@@ -204,7 +236,7 @@ public class ImmediateRenderer implements IImmediateRenderer {
 
     @Override
     public ByteBuffer getGraphicsBuffer() {
-        return this.buffer;
+        return null;
     }
 
     @Override
