@@ -62,11 +62,12 @@ public class SoundManager implements ISoundManager, MediaPlayer.OnPreparedListen
                 if (this.wasPlaying != -1) {
                     this.playMusic(this.wasPlaying);
                     this.wasPlaying = -1;
+                    this.musicPlayer.setVolume(this.wasPlayingVolume, this.wasPlayingVolume);
                 } else if (this.musicPlaying != -1) {
                     this.resumeMusic();
+                    this.musicPlayer.setVolume(this.wasPlayingVolume, this.wasPlayingVolume);
                 }
 
-                this.musicPlayer.setVolume(this.wasPlayingVolume, this.wasPlayingVolume);
                 break;
             case AudioManager.AUDIOFOCUS_LOSS:
                 if (this.musicPlaying != -1) {
