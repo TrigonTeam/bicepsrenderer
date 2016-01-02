@@ -1,6 +1,7 @@
 package cz.trigon.bicepsrendererapi.gl.matrices;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import cz.trigon.bicepsrendererapi.gl.interfaces.matrices.IMatrix;
@@ -11,6 +12,7 @@ public class Matrix4 implements IMatrix {
 
     public Matrix4() {
         this.data = ByteBuffer.allocateDirect(4 * 4 * 4);
+        this.data.order(ByteOrder.nativeOrder());
     }
 
     public static Matrix4 makeProjMatrix(float fov, float aspect, float near, float far) {
