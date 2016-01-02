@@ -18,6 +18,8 @@ public interface IImmediateRenderer {
 
     void vertex(float x, float y);
 
+    void color(float r, float g, float b, float a);
+
     void setPrimitiveMode(PrimitiveMode mode);
 
     PrimitiveMode getPrimitiveMode();

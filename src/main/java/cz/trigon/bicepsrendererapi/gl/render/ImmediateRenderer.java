@@ -2,6 +2,7 @@ package cz.trigon.bicepsrendererapi.gl.render;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -20,11 +21,14 @@ import cz.trigon.bicepsrendererapi.gl.shader.ShaderManager;
 
 public class ImmediateRenderer implements IImmediateRenderer {
 
-    public static final int BUFFER_SIZE = 1024 * 1024 * 4; // 4MB
+    public static final int BUFFER_SIZE = 1024 * 1024; // 1MB
+    public static final int MAX_VERTICES = 87372;
 
     private Surface surface;
 
     private ByteBuffer buffer;
+
+
     private PrimitiveMode primitiveMode;
 
     // THIS IS TEMPORARY
@@ -34,11 +38,14 @@ public class ImmediateRenderer implements IImmediateRenderer {
     private IShader shader;
     private IVbo vbo;
 
+    private float colorRed = 1f, colorGreen = 1f, colorBlue = 1f, colorAlpha = 1f;
+
     private int vertices = 0;
 
     public ImmediateRenderer(Surface surface) {
         this.buffer = ByteBuffer.allocateDirect(ImmediateRenderer.BUFFER_SIZE);
         this.buffer.order(ByteOrder.nativeOrder());
+
         this.surface = surface;
         this.primitiveMode = PrimitiveMode.TRIANGLES;
         this.sm = new ShaderManager(surface);
@@ -57,8 +64,11 @@ public class ImmediateRenderer implements IImmediateRenderer {
         int attribCol = this.shader.getAttribLocation("vColor");
 
         this.vbo.bind();
-        GLES20.glVertexAttribPointer(attribPos, 2, GLES20.GL_FLOAT, false, 6 * 4, 0);
-        GLES20.glVertexAttribPointer(attribCol, 4, GLES20.GL_FLOAT, false, 6 * 4, 2 * 4);
+
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, MAX_VERTICES * 3 * 4, null, GLES20.GL_STREAM_DRAW);
+
+        GLES20.glVertexAttribPointer(attribPos, 2, GLES20.GL_FLOAT, false, 3 * 4, 0);
+        GLES20.glVertexAttribPointer(attribCol, 4, GLES20.GL_UNSIGNED_BYTE, true, 3 * 4, 2 * 4);
 
         GLES20.glEnableVertexAttribArray(attribPos);
         GLES20.glEnableVertexAttribArray(attribCol);
@@ -66,20 +76,38 @@ public class ImmediateRenderer implements IImmediateRenderer {
 
     @Override
     public void flush() {
-        GLES20.glFlush();
+        //GLES20.glFlush();
         this.buffer.flip();
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, this.vertices * 6 * 4, this.buffer, GLES20.GL_STREAM_DRAW);
+        //GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, this.vertices * 3 * 4, this.buffer, GLES20.GL_STREAM_DRAW);
+
+        //GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, MAX_VERTICES * 3 * 4, null, GLES20.GL_STREAM_DRAW);
+        GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, 0, this.vertices * 3 * 4, this.buffer);
 
         GLES20.glDrawArrays(this.getPrimitiveMode().getGl(), 0, this.vertices);
 
         this.buffer.clear();
         this.vertices = 0;
+
+        Log.i(Surface.LDTAG, "FLUSH!");
     }
+
 
     @Override
     public void vertex(float x, float y) {
-        this.buffer.putFloat(x).putFloat(y).putFloat(1).putFloat(1).putFloat(1).putFloat(1);
+        this.buffer.putFloat(x).putFloat(y).put((byte) (colorRed * 255f)).put((byte) (colorGreen * 255f)).put((byte) (colorBlue * 255f)).put((byte) (colorAlpha * 255f));
         this.vertices++;
+
+        if (vertices == ImmediateRenderer.MAX_VERTICES) {
+            flush();
+        }
+    }
+
+    @Override
+    public void color(float r, float g, float b, float a) {
+        this.colorRed = r;
+        this.colorGreen = g;
+        this.colorBlue = b;
+        this.colorAlpha = a;
     }
 
     @Override

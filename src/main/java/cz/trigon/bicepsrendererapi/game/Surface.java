@@ -7,6 +7,8 @@ import android.opengl.GLU;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import java.util.logging.Logger;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -156,6 +158,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
             Log.e(Surface.LDTAG,  "GL error: " + GLU.gluErrorString(glError));
         }
 
+        Log.i(Surface.LDTAG, this.getFps() + "fps");
     }
 
     public int getFps() {
