@@ -7,11 +7,11 @@ import android.opengl.GLU;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import java.util.logging.Logger;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import cz.trigon.bicepsrendererapi.gl.bos.VboManager;
+import cz.trigon.bicepsrendererapi.gl.shader.ShaderManager;
 import cz.trigon.bicepsrendererapi.managers.SoundManager;
 import cz.trigon.bicepsrendererapi.managers.content.ContentManager;
 import cz.trigon.bicepsrendererapi.managers.input.InputManager;
@@ -32,6 +32,8 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     private InputManager input;
     private ContentManager content;
     private SoundManager sound;
+    private VboManager vboManager;
+    private ShaderManager shaderManager;
 
     protected int tps = 60; //TODO this should be changeable
     protected double tickTime = 1d / tps;
@@ -49,10 +51,11 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
         this.input = new InputManager(this);
         this.content = new ContentManager(context.getAssets());
         this.sound = new SoundManager(context);
+        this.vboManager = new VboManager();
+        this.shaderManager = new ShaderManager(this);
         this.input.registerListeners();
 
         this.bindWrappers();
-
 
         this.setEGLContextClientVersion(2);
         this.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
@@ -92,6 +95,15 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
         Input.init(this);
         SoundEffect.init(this);
         Music.init(this);
+    }
+
+
+    public ShaderManager getShaders() {
+        return this.shaderManager;
+    }
+
+    public VboManager getVbos() {
+        return this.vboManager;
     }
 
     public SoundManager getSound() {
@@ -189,6 +201,4 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     private void tick() {
         this.game.tick(this.ticks);
     }
-
-
 }

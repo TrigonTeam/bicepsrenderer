@@ -2,23 +2,18 @@ package cz.trigon.bicepsrendererapi.gl.render;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 import cz.trigon.bicepsrendererapi.game.Surface;
-import cz.trigon.bicepsrendererapi.gl.bos.Vbo;
 import cz.trigon.bicepsrendererapi.gl.bos.VboManager;
 import cz.trigon.bicepsrendererapi.gl.interfaces.bos.IFbo;
-import cz.trigon.bicepsrendererapi.gl.interfaces.bos.IVbo;
 import cz.trigon.bicepsrendererapi.gl.interfaces.render.IImmediateRenderer;
 import cz.trigon.bicepsrendererapi.gl.interfaces.shaders.IShader;
 import cz.trigon.bicepsrendererapi.gl.interfaces.textures.ITexture;
 import cz.trigon.bicepsrendererapi.gl.matrices.Matrix4;
-import cz.trigon.bicepsrendererapi.gl.shader.Shader;
 import cz.trigon.bicepsrendererapi.gl.shader.ShaderManager;
 
 import static android.opengl.GLES20.glBufferSubData;
@@ -44,8 +39,8 @@ public class ImmediateRenderer implements IImmediateRenderer {
     private ShaderManager sm;
     private VboManager vm;
 
+    private String vboId;
     private IShader shader;
-    private IVbo vbo;
 
     private float colorRed = 1f, colorGreen = 1f, colorBlue = 1f, colorAlpha = 1f;
 
@@ -67,11 +62,10 @@ public class ImmediateRenderer implements IImmediateRenderer {
 
         this.surface = surface;
         this.primitiveMode = PrimitiveMode.TRIANGLES;
-        this.sm = new ShaderManager(surface);
+        this.sm = surface.getShaders();
         this.sm.loadShader("default", "/default_shader.vsh", "/default_shader.fsh");
-        this.vm = new VboManager();
+        this.vm = surface.getVbos();
         this.shader = this.sm.getShader("default");
-        this.vbo = this.vm.getVbo("default");
 
         Matrix4 mat = Matrix4.makeOrthoMatrix(0, 1080, 1920, 0, -1, 1);
 
@@ -82,7 +76,9 @@ public class ImmediateRenderer implements IImmediateRenderer {
         int attribPos = this.shader.getAttribLocation("vPos");
         int attribCol = this.shader.getAttribLocation("vColor");
 
-        this.vbo.bind();
+        this.vboId = "default";
+        this.vm.create(this.vboId);
+        this.vm.bind(this.vboId);
 
         GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, BUFFER_SIZE, null, GLES20.GL_STREAM_DRAW);
 
@@ -102,7 +98,7 @@ public class ImmediateRenderer implements IImmediateRenderer {
         this.buffer.put(this.vertArray, 0, this.arrayPos);
         this.buffer.flip();
 
-        glBufferSubData(GLES20.GL_ARRAY_BUFFER, 0, this.buffer.limit()*4, this.buffer);
+        glBufferSubData(GLES20.GL_ARRAY_BUFFER, 0, this.buffer.limit() * 4, this.buffer);
         GLES20.glDrawArrays(this.getPrimitiveMode().getGl(), 0, this.vertices);
 
         this.buffer.clear();
@@ -215,8 +211,8 @@ public class ImmediateRenderer implements IImmediateRenderer {
     }
 
     @Override
-    public void useVertexbuffer(IVbo v) {
-
+    public void useVertexbuffer(String v) {
+        this.vm.bind(v);
     }
 
     @Override
@@ -230,8 +226,8 @@ public class ImmediateRenderer implements IImmediateRenderer {
     }
 
     @Override
-    public IVbo getVertexbuffer() {
-        return null;
+    public String getVertexbuffer() {
+        return this.vboId;
     }
 
     @Override

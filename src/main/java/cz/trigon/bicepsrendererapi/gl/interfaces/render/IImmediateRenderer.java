@@ -4,10 +4,9 @@ import android.opengl.GLES20;
 
 import java.nio.ByteBuffer;
 
-import cz.trigon.bicepsrendererapi.gl.interfaces.textures.ITexture;
 import cz.trigon.bicepsrendererapi.gl.interfaces.bos.IFbo;
-import cz.trigon.bicepsrendererapi.gl.interfaces.bos.IVbo;
 import cz.trigon.bicepsrendererapi.gl.interfaces.shaders.IShader;
+import cz.trigon.bicepsrendererapi.gl.interfaces.textures.ITexture;
 
 
 public interface IImmediateRenderer {
@@ -44,13 +43,13 @@ public interface IImmediateRenderer {
 
     void useFramebuffer(IFbo f);
 
-    void useVertexbuffer(IVbo v);
+    void useVertexbuffer(String v);
 
     IShader getShader();
 
     IFbo getFramebuffer();
 
-    IVbo getVertexbuffer();
+    String getVertexbuffer();
 
     ByteBuffer getGraphicsBuffer();
 
