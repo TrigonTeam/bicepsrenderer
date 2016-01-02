@@ -16,6 +16,8 @@ public interface IImmediateRenderer {
 
     void flush();
 
+    void vertex(float x, float y);
+
     void setPrimitiveMode(PrimitiveMode mode);
 
     PrimitiveMode getPrimitiveMode();
