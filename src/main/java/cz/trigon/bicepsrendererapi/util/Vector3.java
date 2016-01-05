@@ -30,29 +30,11 @@ public class Vector3 {
     }
 
     public float getDistance(Vector3 other) {
-        if (other.equals(this))
-            return 0;
+        float dX = this.x - other.x;
+        float dY = this.y - other.y;
+        float dZ = this.z - other.z;
 
-        if (other.x == this.x && other.y == this.y)
-            return Math.abs(other.z - this.z);
-
-        if (other.x == this.x && other.z == this.z)
-            return Math.abs(other.y - this.y);
-
-        if (other.y == this.y && other.z == this.z)
-            return Math.abs(other.x - this.x);
-
-        if (other.x == this.x)
-            return (float) Math.sqrt(Math.pow(other.z - this.z, 2) + Math.pow(this.y - other.y, 2));
-
-        if (other.y == this.y)
-            return (float) Math.sqrt(Math.pow(other.x - this.x, 2) + Math.pow(this.z - other.z, 2));
-
-        if (other.z == this.z)
-            return (float) Math.sqrt(Math.pow(other.x - this.x, 2) + Math.pow(this.y - other.y, 2));
-
-        return (float) Math.sqrt(Math.pow(other.x - this.x, 2) + Math.pow(this.y - other.y, 2)
-                + Math.pow(other.z - this.z, 2));
+        return (float) Math.sqrt(dX * dX + dY * dY + dZ * dZ);
     }
 
     public float x() {
