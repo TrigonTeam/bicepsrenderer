@@ -27,16 +27,9 @@ public class Vector2 {
     }
 
     public float getDistance(Vector2 other) {
-        if (other.equals(this))
-            return 0;
-
-        if (other.x == this.x)
-            return Math.abs(other.y - this.y);
-
-        if (other.y == this.y)
-            return Math.abs(other.x - this.x);
-
-        return (float) Math.sqrt(Math.pow(other.x - this.x, 2) + Math.pow(this.y - other.y, 2));
+        float dX = other.x - this.x;
+        float dY = other.y - this.y;
+        return (float) Math.sqrt(dX * dX + dY * dY);
     }
 
     public float x() {
