@@ -18,8 +18,8 @@ public class Vector2 {
         this.y = y;
 
         this.hash = 23;
-        this.hash *= 31 + Float.floatToRawIntBits(x);
-        this.hash *= 31 + Float.floatToRawIntBits(y);
+        this.hash *= 31 + Float.floatToIntBits(x);
+        this.hash *= 31 + Float.floatToIntBits(y);
     }
 
     public Vector2(float[] values) {

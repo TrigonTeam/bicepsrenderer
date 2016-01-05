@@ -20,9 +20,9 @@ public class Vector3 {
         this.z = z;
 
         this.hash = 23;
-        this.hash *= 31 + Float.floatToRawIntBits(x);
-        this.hash *= 31 + Float.floatToRawIntBits(y);
-        this.hash *= 31 + Float.floatToRawIntBits(z);
+        this.hash *= 31 + Float.floatToIntBits(x);
+        this.hash *= 31 + Float.floatToIntBits(y);
+        this.hash *= 31 + Float.floatToIntBits(z);
     }
 
     public Vector3(float[] values) {
