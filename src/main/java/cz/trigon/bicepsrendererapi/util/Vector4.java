@@ -6,6 +6,7 @@ public class Vector4 {
     protected float z;
     protected float w;
     private int hash;
+    private String str;
 
     public Vector4() {
         this(0, 0, 0, 0);
@@ -26,6 +27,8 @@ public class Vector4 {
         this.hash *= 31 + Float.floatToIntBits(y);
         this.hash *= 31 + Float.floatToIntBits(z);
         this.hash *= 31 + Float.floatToIntBits(w);
+
+        this.str = this.x + ";" + this.y + ";" + this.z + ";" + this.w;
     }
 
     public Vector4(float[] values) {
@@ -74,6 +77,6 @@ public class Vector4 {
 
     @Override
     public String toString() {
-        return this.x + ";" + this.y + ";" + this.z + ";" + this.w;
+        return this.str;
     }
 }

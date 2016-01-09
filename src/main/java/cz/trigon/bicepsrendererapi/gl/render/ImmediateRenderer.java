@@ -29,41 +29,36 @@ public class ImmediateRenderer implements IImmediateRenderer {
     private Surface surface;
 
     private FloatBuffer buffer;
-    //private FloatBuffer bufferF;
-    //private IntBuffer bufferI;
 
-
-    private PrimitiveMode primitiveMode;
-
-    // THIS IS TEMPORARY
     private ShaderManager sm;
     private VboManager vm;
 
     private String vboId;
     private IShader shader;
 
-    private float colorRed = 1f, colorGreen = 1f, colorBlue = 1f, colorAlpha = 1f;
-
     private float[] vertArray;
     private int arrayPos = 0;
-
     private int vertices = 0;
 
     private float color = 0;
+    private int primitiveMode;
+
+    public static final int TRIANGLES = GLES20.GL_TRIANGLES;
+    public static final int LINES = GLES20.GL_LINES;
+    public static final int TRIANGLE_STRIP = GLES20.GL_TRIANGLE_STRIP;
+    public static final int TRIANGLE_FAN = GLES20.GL_TRIANGLE_FAN;
+    public static final int LINE_STRIP = GLES20.GL_LINE_STRIP;
+    public static final int LINE_LOOP = GLES20.GL_LINE_LOOP;
 
     public ImmediateRenderer(Surface surface) {
         ByteBuffer b = ByteBuffer.allocateDirect(ImmediateRenderer.BUFFER_SIZE*4);
         b.order(ByteOrder.nativeOrder());
 
         this.buffer = b.asFloatBuffer();
-
-        //this.bufferF = this.buffer.asFloatBuffer();
-        //this.bufferI = this.buffer.asIntBuffer();
-
         this.vertArray = new float[MAX_VERTICES*VERTEX_SIZE_FLOAT];
 
         this.surface = surface;
-        this.primitiveMode = PrimitiveMode.TRIANGLES;
+        this.primitiveMode = GLES20.GL_TRIANGLES;
         this.sm = surface.getShaders();
         this.sm.loadShader("default", "/default_shader.vsh", "/default_shader.fsh");
         this.vm = surface.getVbos();
@@ -93,15 +88,11 @@ public class ImmediateRenderer implements IImmediateRenderer {
 
     @Override
     public void flush() {
-        //GLES20.glFlush();
-
-        //System.out.println("ArrayPos " + this.arrayPos + ", vertices " + this.vertices);
-
         this.buffer.put(this.vertArray, 0, this.arrayPos);
         this.buffer.flip();
 
         glBufferSubData(GLES20.GL_ARRAY_BUFFER, 0, this.buffer.limit() * 4, this.buffer);
-        GLES20.glDrawArrays(this.getPrimitiveMode().getGl(), 0, this.vertices);
+        GLES20.glDrawArrays(this.primitiveMode, 0, this.vertices);
 
         this.buffer.clear();
 
@@ -112,12 +103,6 @@ public class ImmediateRenderer implements IImmediateRenderer {
 
     @Override
     public void vertex(float x, float y) {
-        //this.bufferF.put(x).put(y);
-        //this.bufferI.put(Float.floatToRawIntBits(x)).put(Float.floatToRawIntBits(y)).put(0xFFFFFFFF);
-        //this.buffer.putFloat(x).putFloat(y).putInt(0xFFFFFFFF);
-
-        //this.bufferF.put(x).put(y).put(-99999999999999f);
-
         vertArray[arrayPos++] = x;
         vertArray[arrayPos++] = y;
         vertArray[arrayPos++] = this.color;
@@ -140,11 +125,10 @@ public class ImmediateRenderer implements IImmediateRenderer {
     }
 
     @Override
-    public void color(int i) {
-        this.color = new Color(i).val();
+    public void color(int androidColor) {
+        this.color = Color.packColor(androidColor);
     }
 
-    @Override
     public void color(Color color) {
         this.color = color.val();
     }
@@ -156,7 +140,7 @@ public class ImmediateRenderer implements IImmediateRenderer {
     }
 
     @Override
-    public void setPrimitiveMode(PrimitiveMode mode) {
+    public void setPrimitiveMode(int mode) {
         if(this.vertices > 0)
             this.flush();
 
@@ -164,7 +148,7 @@ public class ImmediateRenderer implements IImmediateRenderer {
     }
 
     @Override
-    public PrimitiveMode getPrimitiveMode() {
+    public int getPrimitiveMode() {
         return this.primitiveMode;
     }
 
@@ -208,16 +192,9 @@ public class ImmediateRenderer implements IImmediateRenderer {
         GLES20.glClearColor(r, g, b, a);
     }
 
-    @Override
     public void setClearColor(cz.trigon.bicepsrendererapi.util.Color c) {
         GLES20.glClearColor(c.x(), c.y(), c.z(), c.w());
     }
-
-    /*@Override
-    public void useAttributeProvider(IAttributeProvider a) {
-        this.atrp = a;
-        a.useBuffer(this.buffer);
-    }*/
 
     @Override
     public void useShader(IShader s) {

@@ -20,15 +20,13 @@ public interface IImmediateRenderer {
 
     void color(int r, int g, int b, int a);
 
-    void color(float f);
+    void color(float color);
 
-    void color(int i);
+    void color(int androidColor);
 
-    void color(Color color);
+    void setPrimitiveMode(int mode);
 
-    void setPrimitiveMode(PrimitiveMode mode);
-
-    PrimitiveMode getPrimitiveMode();
+    int getPrimitiveMode();
 
     void setTexture(ITexture texture);
 
@@ -45,8 +43,6 @@ public interface IImmediateRenderer {
     float getLineWidth();
 
     void setClearColor(float r, float g, float b, float a);
-
-    void setClearColor(Color c);
 
     void useShader(IShader s);
 
@@ -89,12 +85,5 @@ public interface IImmediateRenderer {
         public int getGl() {
             return glPrimitive;
         }
-    }
-
-    /**
-     * Modes of shape rendering
-     */
-    enum ShapeMode {
-        OUTLINE, FILLED
     }
 }

@@ -40,7 +40,6 @@ public class Input implements IInputManager {
         return this.input.getTouch();
     }
 
-
     @Override
     public float[] getTouchesX() {
         return this.input.getTouchesX();

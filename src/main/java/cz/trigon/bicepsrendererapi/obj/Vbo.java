@@ -21,9 +21,9 @@ public class Vbo implements ILockable {
         this.name = name;
 
         if (this.vbo.exists(name))
-            this.glId = this.vbo.create(name);
-        else
             this.glId = this.vbo.get(name);
+        else
+            this.glId = this.vbo.create(name);
     }
 
     public int getGlId() {
