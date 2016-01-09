@@ -4,8 +4,10 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.InvalidClassException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -17,6 +19,7 @@ import java.util.Map;
 import cz.trigon.bicepsrendererapi.game.Surface;
 import cz.trigon.bicepsrendererapi.managers.interfaces.IContentManager;
 import cz.trigon.bicepsrendererapi.managers.interfaces.ILoadable;
+import cz.trigon.bicepsrendererapi.obj.Content;
 
 public class ContentManager implements IContentManager {
 
@@ -40,6 +43,49 @@ public class ContentManager implements IContentManager {
         }
 
         return true;
+    }
+
+    public void loadDefaults() {
+        ContentEntry e = new ContentEntry(true, "default_shader.fsh", "default_shader.fsh", this.root);
+        root.addChild(e);
+        this.pathMappings.put("/" + e.assetsPath, e);
+
+        e = new ContentEntry(true, "default_shader.vsh", "default_shader.vsh", this.root);
+        root.addChild(e);
+        this.pathMappings.put("/" + e.assetsPath, e);
+    }
+
+    @Override
+    public void load(String indexFile) throws IOException {
+        long start = System.nanoTime();
+        this.loadDefaults();
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(this.asset.open(indexFile)));
+
+        try {
+            String line;
+            while ((line = br.readLine()) != null) {
+
+                ContentEntry root;
+                if (line.contains("/")) {
+                    String rootPath = "/" + line.substring(0, line.lastIndexOf("/"));
+                    root = this.pathMappings.get(rootPath);
+                } else {
+                    root = this.root;
+                }
+
+                ContentEntry e = new ContentEntry(this.isFile(line), line,
+                        line.contains("/") ? line.substring(line.lastIndexOf("/")) : line, root);
+
+                root.addChild(e);
+                this.pathMappings.put("/" + line, e);
+            }
+        } finally {
+            br.close();
+        }
+
+        long time = System.nanoTime() - start;
+        Log.i(Surface.LDTAG, "Index load time: " + (time / 1000000d) + " ms");
     }
 
     // Slow like a verstopfung, it would be better to do compile-time indexing,
@@ -159,7 +205,7 @@ public class ContentManager implements IContentManager {
 
     @Override
     public AssetFileDescriptor getDescriptor(String path) throws IOException {
-        if(!this.pathMappings.containsKey(path))
+        if (!this.pathMappings.containsKey(path))
             return null;
 
         return this.asset.openFd(path.substring(1));

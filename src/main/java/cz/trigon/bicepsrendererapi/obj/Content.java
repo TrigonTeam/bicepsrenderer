@@ -32,6 +32,11 @@ public class Content implements  IContentManager {
     }
 
     @Override
+    public void load(String indexFile) throws IOException {
+        this.c.load(indexFile);
+    }
+
+    @Override
     public <T extends ILoadable> T get(String path, Class<T> type, boolean cache, Object[] parameters, Class<?>[] parameterTypes) throws IOException {
         return this.c.get(path, type, cache, parameters, parameterTypes);
     }
