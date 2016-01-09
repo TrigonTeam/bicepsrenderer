@@ -16,7 +16,7 @@ public class Color extends Vector4 {
     public static final Color TRANSPARENT = new Color(android.graphics.Color.TRANSPARENT);
 
     public static float packColor(int r, int g, int b, int a) {
-        return Float.intBitsToFloat(((r & 0xFF) << 24) | ((g & 0xFF) << 16) | ((b & 0xFF) << 8)  | (a & 0xFF));
+        return Float.intBitsToFloat((a << 24) | (b << 16) | (g << 8) | r);
     }
 
     private int r, g, b, a;
@@ -44,8 +44,8 @@ public class Color extends Vector4 {
         this.b = (int) (b * 255);
         this.a = (int) (a * 255);
 
-        this.valueInt = ((this.r & 0xFF) << 24) | ((this.g & 0xFF) << 16) |
-                ((this.b & 0xFF) << 8) | (this.a & 0xFF);
+        this.valueInt = (this.a << 24) | (this.b << 16) | (this.g << 8) | this.r;
+
         this.value = Float.intBitsToFloat(this.valueInt);
     }
 
@@ -57,8 +57,8 @@ public class Color extends Vector4 {
         this.b = b;
         this.a = a;
 
-        this.valueInt = ((r & 0xFF) << 24) | ((g & 0xFF) << 16) |
-                ((b & 0xFF) << 8) | (a & 0xFF);
+        this.valueInt = (this.a << 24) | (this.b << 16) | (this.g << 8) | this.r;
+
         this.value = Float.intBitsToFloat(this.valueInt);
     }
 
