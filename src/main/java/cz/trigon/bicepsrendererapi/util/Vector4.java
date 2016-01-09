@@ -27,8 +27,6 @@ public class Vector4 {
         this.hash *= 31 + Float.floatToIntBits(y);
         this.hash *= 31 + Float.floatToIntBits(z);
         this.hash *= 31 + Float.floatToIntBits(w);
-
-        this.str = this.x + ";" + this.y + ";" + this.z + ";" + this.w;
     }
 
     public Vector4(float[] values) {
@@ -77,6 +75,9 @@ public class Vector4 {
 
     @Override
     public String toString() {
+        if(this.str == null)
+            this.str = this.x + ";" + this.y + ";" + this.z + ";" + this.w;
+
         return this.str;
     }
 }
