@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import cz.trigon.bicepsrendererapi.gl.interfaces.bos.IFbo;
 import cz.trigon.bicepsrendererapi.gl.interfaces.shaders.IShader;
 import cz.trigon.bicepsrendererapi.gl.interfaces.textures.ITexture;
+import cz.trigon.bicepsrendererapi.util.Color;
 
 
 public interface IImmediateRenderer {
@@ -20,6 +21,10 @@ public interface IImmediateRenderer {
     void color(int r, int g, int b, int a);
 
     void color(float f);
+
+    void color(int i);
+
+    void color(Color color);
 
     void setPrimitiveMode(PrimitiveMode mode);
 
@@ -40,6 +45,8 @@ public interface IImmediateRenderer {
     float getLineWidth();
 
     void setClearColor(float r, float g, float b, float a);
+
+    void setClearColor(Color c);
 
     void useShader(IShader s);
 

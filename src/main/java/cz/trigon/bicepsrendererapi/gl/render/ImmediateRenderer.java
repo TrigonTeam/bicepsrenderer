@@ -1,6 +1,5 @@
 package cz.trigon.bicepsrendererapi.gl.render;
 
-import android.graphics.Color;
 import android.opengl.GLES20;
 
 import java.nio.ByteBuffer;
@@ -15,6 +14,7 @@ import cz.trigon.bicepsrendererapi.gl.interfaces.shaders.IShader;
 import cz.trigon.bicepsrendererapi.gl.interfaces.textures.ITexture;
 import cz.trigon.bicepsrendererapi.gl.matrices.Matrix4;
 import cz.trigon.bicepsrendererapi.gl.shader.ShaderManager;
+import cz.trigon.bicepsrendererapi.util.Color;
 
 import static android.opengl.GLES20.glBufferSubData;
 
@@ -131,7 +131,7 @@ public class ImmediateRenderer implements IImmediateRenderer {
 
     @Override
     public void color(int r, int g, int b, int a) {
-        this.color =  packColor(r, g, b, a);
+        this.color(Color.packColor(r, g, b, a));
     }
 
     @Override
@@ -139,26 +139,20 @@ public class ImmediateRenderer implements IImmediateRenderer {
         this.color = color;
     }
 
-    public static float packColor(int r, int g, int b, int a) {
-        return Float.intBitsToFloat(((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8)  | (b & 0xFF));
+    @Override
+    public void color(int i) {
+        this.color = new Color(i).val();
     }
 
-    public static float packColor(int color) {
-        return Float.intBitsToFloat(color);
+    @Override
+    public void color(Color color) {
+        this.color = color.val();
     }
-
-    /*@Override
-    public void color(float r, float g, float b, float a) {
-        this.colorRed = r;
-        this.colorGreen = g;
-        this.colorBlue = b;
-        this.colorAlpha = a;
-    }*/
 
     @Override
     public void setClearColor(int color) {
-        this.setClearColor(Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f,
-                Color.alpha(color) / 255f);
+        Color c = new Color(color);
+        GLES20.glClearColor(c.x(), c.y(), c.z(), c.w());
     }
 
     @Override
@@ -211,7 +205,12 @@ public class ImmediateRenderer implements IImmediateRenderer {
 
     @Override
     public void setClearColor(float r, float g, float b, float a) {
+        GLES20.glClearColor(r, g, b, a);
+    }
 
+    @Override
+    public void setClearColor(cz.trigon.bicepsrendererapi.util.Color c) {
+        GLES20.glClearColor(c.x(), c.y(), c.z(), c.w());
     }
 
     /*@Override
