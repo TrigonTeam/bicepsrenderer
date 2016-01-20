@@ -60,7 +60,7 @@ public class ImmediateRenderer implements IImmediateRenderer {
         this.surface = surface;
         this.primitiveMode = GLES20.GL_TRIANGLES;
         this.sm = surface.getShaders();
-        this.sm.loadShader("default", "/default_shader.vsh", "/default_shader.fsh");
+        this.sm.loadShader("default", "/wave_shader.vsh", "/wave_shader.fsh");
         this.vm = surface.getVbos();
         this.shader = this.sm.getShader("default");
 
@@ -213,7 +213,7 @@ public class ImmediateRenderer implements IImmediateRenderer {
 
     @Override
     public IShader getShader() {
-        return null;
+        return this.shader;
     }
 
     @Override
