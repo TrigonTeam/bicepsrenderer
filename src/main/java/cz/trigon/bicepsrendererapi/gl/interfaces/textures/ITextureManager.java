@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 
 import java.util.Map;
 
-import cz.trigon.bicepsrendererapi.gl.Settings;
+import cz.trigon.bicepsrendererapi.util.TextureSettings;
 import cz.trigon.bicepsrendererapi.util.Vector2;
 
 public interface ITextureManager {
@@ -44,7 +44,7 @@ public interface ITextureManager {
      * @param contentPath Name of texture in used content manager
      * @param settings    Custom settings for texture
      */
-    void loadTexture(int id, String contentPath, Settings settings);
+    void loadTexture(int id, String contentPath, TextureSettings settings);
 
     /**
      * Loads spritesheet from one file (images numbered by x-position)
@@ -54,9 +54,9 @@ public interface ITextureManager {
      * @param spriteSize    Size of one image
      * @param settings      Map with custom settings for each texture
      */
-    void loadSpritesheet(int spritesheetId, String contentPath, Vector2 spriteSize, Map<Integer, Settings> settings);
+    void loadSpritesheet(int spritesheetId, String contentPath, Vector2 spriteSize, Map<Integer, TextureSettings> settings);
     
-    void loadSpritesheet(int spritesheetId, String contentPath, Vector2 spriteSize, Settings settings);
+    void loadSpritesheet(int spritesheetId, String contentPath, Vector2 spriteSize, TextureSettings settings);
 
     /**
      * Loads spritesheet from multiple files
@@ -66,7 +66,7 @@ public interface ITextureManager {
      * @param numberOfFiles   Number of loaded files
      * @param settings        Map with custom settings for each texture
      */
-    void loadSpritesheet(int spritesheetId, String contentPathMask, int numberOfFiles, Map<Integer, Settings> settings);
+    void loadSpritesheet(int spritesheetId, String contentPathMask, int numberOfFiles, Map<Integer, TextureSettings> settings);
 
     /**
      * Finishes texture loading

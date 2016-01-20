@@ -24,6 +24,22 @@ public class Color extends Vector4 {
                 android.graphics.Color.blue(color), android.graphics.Color.alpha(color));
     }
 
+    public static int r(float color) {
+        return Float.floatToIntBits(color) & 0xFF;
+    }
+
+    public static int g(float color) {
+        return (Float.floatToIntBits(color) >> 8) & 0xFF;
+    }
+
+    public static int b(float color) {
+        return (Float.floatToIntBits(color) >> 16) & 0xFF;
+    }
+
+    public static int a(float color) {
+        return (Float.floatToIntBits(color) >> 24) & 0xFF;
+    }
+
     private int r, g, b, a;
     private float value;
     private int valueInt;

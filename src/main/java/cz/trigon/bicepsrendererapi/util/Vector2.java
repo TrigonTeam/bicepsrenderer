@@ -21,8 +21,6 @@ public class Vector2 {
         this.hash = 23;
         this.hash *= 31 + Float.floatToIntBits(x);
         this.hash *= 31 + Float.floatToIntBits(y);
-
-        this.str = this.x + ";" + this.y;
     }
 
     public Vector2(float[] values) {
@@ -60,6 +58,9 @@ public class Vector2 {
 
     @Override
     public String toString() {
+        if(this.str == null)
+            this.str = this.x + ";" + this.y;
+
         return this.str;
     }
 }
