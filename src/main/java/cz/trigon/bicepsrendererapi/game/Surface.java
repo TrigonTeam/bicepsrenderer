@@ -39,7 +39,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     protected double tickTime = 1d / tps;
     protected double tickTimeSec = this.tickTime * 1000000000;
     protected long time, lastTime, lastInfo;
-    protected int fps, ticks, currentFps;
+    protected int fps, tick, currentFps;
 
     private boolean wasMusicPlaying;
     private int canvasHeight;
@@ -153,14 +153,14 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         float ptt = (this.time - this.lastTime) / ((float) this.tickTimeSec);
 
-        this.renderTick(ptt);
+        this.renderTick(this.tick, ptt);
         this.currentFps++;
 
         this.time = System.nanoTime();
         while(time - lastTime >= this.tickTimeSec) {
             this.input.tick();
             this.tick();
-            this.ticks++;
+            this.tick++;
             this.lastTime += this.tickTimeSec;
         }
 
@@ -182,7 +182,7 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     }
 
     public int getTicks() {
-        return this.ticks;
+        return this.tick;
     }
 
     public int getCanvasWidth() {
@@ -198,11 +198,11 @@ public class Surface extends GLSurfaceView implements GLSurfaceView.Renderer {
     }
 
     // Maybe we should check if game != null here
-    private void renderTick(float ptt) {
-        this.game.renderTick(ptt);
+    private void renderTick(int tick, float ptt) {
+        this.game.renderTick(tick, ptt);
     }
 
     private void tick() {
-        this.game.tick(this.ticks);
+        this.game.tick(this.tick);
     }
 }

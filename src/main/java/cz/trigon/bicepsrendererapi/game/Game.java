@@ -17,7 +17,7 @@ public abstract class Game {
 
     public abstract void setup();
 
-    public abstract void tick(int ticks);
-    public abstract void renderTick(float ptt);
+    public abstract void tick(int tick);
+    public abstract void renderTick(int tick, float ptt);
     public abstract void surfaceChanged(int w, int h);
 }
